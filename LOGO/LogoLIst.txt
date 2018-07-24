@@ -1,0 +1,14 @@
+AWS
+Bitcoin
+Blockchain
+Dapp
+Decentralized
+Ethereum
+Google Cloud Platform
+ICO
+Naver Cloud Platform
+PyTorch
+Solidity
+Tensorflow
+Web3.js
+ERC20
