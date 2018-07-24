@@ -1,0 +1,70 @@
+ERC20
+
+OpenZeppelin의 token/ERC20 폴더에 대한 전반적인 설명.
+
+A. Token Contract
+
+0. ERC20Basic
+  interface : totalSupply, balacneOf, transfer
+  
+1. BasicToken (is ERC20Basic)
+ -variable : totalSupply, balance
+ -function
+    a) totalSupply // 총량
+    b) transfer // 송금
+    c) balanceOf // 지갑별 보유량
+
+2. ERC20 (is ERC20Basic)
+ -interface : allowance, transferFrom, approve
+    
+3. DetailedERC20 (is ERC20)
+ -variable : name, symbol, decimals
+ -function
+    a) constructor // 토큰의 이름, 기호, 소수점 자리 설정
+
+4. StandardToken (is ERC20, BasicToken)
+ Standard.
+ -variable : allowed
+ -function
+    a) transferFrom // 위임 받은 토큰 송금
+    b) approve // 토큰에 대한 권한 위임
+    c) allowance // 위임 받은 토큰량
+    d) increaseApproval // 위임량 증가
+    e) decreaseApproval // 위임량 감소
+
+5. PausableToken (is StandardToken, Pausable)
+ Pausable 기능 추가
+ 
+6. MintableToken (is StandardToken, Ownable)
+ 토큰 추가 발행 가능
+ -variable : mintingFinished
+ -modifier : canMint, hasMintPermission
+ -function
+    a) mint // 토큰 추가 발행
+    b) finishMinting // 추가 발행 종료
+
+7. CappedToken (is MintableToken)
+ 추가 발행 가능 but, 토큰의 최대 수량이 정해져 있음
+
+8. BurnableToken (is BasicToken)
+ 토큰 소각 가능
+ -function
+    a) burn // 토큰 소각
+
+9. StandardBurnableToken (is BurnableToken, StandardToken)
+ StandardToken + BurnableToken + one function(burnFrom)
+ -function
+    a) burnFrom // 위임 받은 토큰 소각
+
+10. RBACMintableToken (is MintableToken, RBAC)
+ 토큰 추가 발행 권한을 다른 사람에 주고 뺏기 가능
+ 
+B. Library, Contract related with Token
+
+1. SafeERC20
+ Approve, TransferFrom 기능에 safe 추가
+ 
+2. TokenTimelock
+ 일정 기한이 지나면 사람들이 토큰을 이 컨트랙트에서 가져갈 수 있음
+
+3. TokenVesting
