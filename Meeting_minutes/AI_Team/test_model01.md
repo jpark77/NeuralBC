@@ -6,6 +6,7 @@
 #### 데이터 수집
 ##### 종류 : OHLC(Open High Low Close) price, Trading Volume, Market issues, etc
 OHLC의 경우는 JSON, csv와 같은 준정형데이터(Semi-structured data)형태로 가지고 올 수 있어서 쉽게 정형데이터(Structured data)로 가공할 수 있음
+
 JSON
 > {'price_close': 6.31,
   'price_high': 7.1,
