@@ -3,6 +3,8 @@
 ##### Bao W, Yue J, Rao Y (2017) A deep learning framework for financial time series using stacked autoencoders and long-short term memory. PLOS ONE 12(7): e0180944.
 ![alt text](./W_Bao_et_al.PNG)
 
+Wavelet --> 시계열(Time Series)에서 Denoise를 위해 
+
 #### 데이터 수집
 ##### 종류 : OHLC(Open High Low Close) price, Trading Volume, Market issues, etc
 OHLC의 경우는 JSON, csv와 같은 준정형데이터(Semi-structured data)형태로 가지고 올 수 있어서 쉽게 정형데이터(Structured data)로 가공할 수 있음
