@@ -1,7 +1,7 @@
 ### Our first test model
 ##### WSAEs-LSTM = Wavelet Transform + Stacked Autoencoder + LSTM From
 ##### Bao W, Yue J, Rao Y (2017) A deep learning framework for financial time series using stacked autoencoders and long-short term memory. PLOS ONE 12(7): e0180944.
-![alt text](https://github.com/yhnr15/NeuralBC/Meeting_minutes/AI_Team/W_Bao_et_al.png)
+![alt text](https://github.com/yhnr15/NeuralBC/Meeting_minutes/AI_Team/W_Bao_et_al.PNG)
 
 #### 데이터 수집
 ##### 종류 : OHLC(Open High Low Close) price, Trading Volume, Market issues, etc
@@ -26,6 +26,7 @@ JSON
 ###### Market_issues
 
 | time        | news                                                                        |
+| ----------- | --------------------------------------------------------------------------- |
 | 2018-07-19  | '美 청문회, 긍정적 목소리 높아…"암호화폐는 사회적 산물, 미래 인프라로 지원해야" ' |
 | 2018-07-20  | '美 금융소비자보호국, 블록체인 규제 샌드박스 시행'                              |
 | ....        | ....                                                                        |
