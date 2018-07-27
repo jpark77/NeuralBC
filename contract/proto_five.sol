@@ -202,31 +202,5 @@ contract TokenExchange is SafeMath {
         while(j<tok_index){ //send back token
             amt_send = tok_user_index[tok_users[j]][j];
             tok_user_index[tok_users[j]][j] = safeSub(tok_user_index[tok_users[j]][j], amt_send);
-            if (!Token(token).transfer(tok_users[j], amt_send)) throw;
-            j++;
-        }
-        
-        fee_eth = address(this).balance;
-        fee_tok = Token(token).balanceOf(address(this));
-        //myWallet.call.value(address(this).balance);
-        //Token(token).transfer( myWallet ,Token(token).balanceOf(addresss(this));
-    }
-   
-}
-
-contract Token {
-  function totalSupply() constant returns (uint256 supply) {}
-  function balanceOf(address _owner) constant returns (uint256 balance) {}
-  function transfer(address _to, uint256 _value) returns (bool success) {}
-  function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {}
-  function approve(address _spender, uint256 _value) returns (bool success) {}
-  function allowance(address _owner, address _spender) constant returns (uint256 remaining) {}
-
-  event Transfer(address indexed _from, address indexed _to, uint256 _value);
-  event Approval(address indexed _owner, address indexed _spender, uint256 _value);
-
-  uint public decimals;
-  string public name;
-}
 
 
