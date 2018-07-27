@@ -59,7 +59,7 @@ for sen in title:
     print()
 
 
-####
+#### SentimentIntensityAnalyzer test 
 view = [ "ICO 신규 규제안 발표",
         "Loved the ambience",
         "The place is not easy to locate"]
