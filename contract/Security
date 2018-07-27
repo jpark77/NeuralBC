@@ -1,0 +1,44 @@
+보안 이슈
+
+1. Re-entracy
+ 송금하는데 가스 양을 다 쓰게 해서 뒤에 코드는 실행되지 않게 한다.
+ 코드를 잘못 짜면 악의적 유저는 계속해서 출금할 수 있다.
+ 
+2. Gas limit and Loop
+ loop를 도는 횟수가 변동이 있는 경우 도중에 Gas를 다 소모해서 함수를 완전하게 실행 시키지 못할 수 도 있다.
+ Gas limit이 존재하기에 transaction은 일정량의 gas만 소모할 수 있다.
+ (cf. view 함수는 데이터를 읽기만 하기 때문에 괜찮다.)
+ 
+3. Sending and Reveing Ether
+ 내가 Contract에 Ether를 보내는 경우 그 Contract의 fallback 함수가 실행 될 수 있다.
+ call.value와 transfer는 기능적으로 같다.
+  fallback 함수는 2300 gas만 사용할 수 있어서 Ether를 제대로 받지 못할 수도 있다.
+  call.value는 받는 contract(user)에 더 많은 함수를 보내서 더 다양한(expensive) 행동을 할 수 있게 한다.)
+  call.value로 많은 gas를 보냈는데 악의적 유저는 이 gas로 악의적 행동을 할 수 있다.
+   ex) 
+  
+  주의사항
+   a. Contract에 Ether를 보내는 경우, fallback 함수가 실행될 수 있다.
+   b. call depth가 1024를 넘으면 transfer는 실패. (withdraw 권장)
+   c. 받는 contract에서 많은 gas를 요구하면 gas 부족 현상이 생길 수 있다. (withdraw 권장)
+
+4. Callstack Depth
+
+5. tx.origin
+ 절대 tx.origin을 authorization에 사용하지 말 것.
+
+
+권장사항
+
+1. Take Warnings Seriously
+
+2. Checks-Effect-Interactions Pattern 사용
+
+
+
+
+
+
+
+
+
