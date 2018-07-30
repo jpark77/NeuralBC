@@ -35,8 +35,10 @@
 2. Checks-Effect-Interactions Pattern 사용
 
 
+///
 
-
+Ether를 transfer했는데 받는 쪽에서 fallback payable로 이상하게 실행할 경우에 문제  
+Ether를 transfer했는데 받는 쪽이 이미 사라진 contract이면 문제 발생
 
 
 
