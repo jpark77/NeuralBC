@@ -13,47 +13,52 @@ def get_attractions(url, data=None):
     data_sume=[]
     wb_data=requests.get(url)
     soup=BeautifulSoup(wb_data.text,'html.parser')
-    titles=soup.select('.articleListTitle > a')
-    times = soup.select('.listRight > span ')
+    titles=soup.select('.card-content > a > h4.headline')
+    times = soup.select('.fixed-bottom >  span.time ')
     for title, time in zip (titles, times):
         data={
             'title':title.get_text(),
             'time':time.get_text(),
         }
         data_sume.append(data)
-    print(data_sume)
     return data_sume
 
-urls=['https://tokenpost.kr/regulation?page={}'.format(str(i)) for i in range (1,18)]
+urls=['https://bitcoinmagazine.com/sections/regulation/{}/'.format(str(i)) for i in range (1,6)]
 data_sum=[]
 for single_url in urls:
     data_sum.append(get_attractions(single_url))
+#####
 
-    
-#### restruct the event time and event title
+
+print(len(data_sum))
+
+
+
 title=[]
-for i in range(17):
-    for j in range(7):
+for i in range(5):
+    for j in range(19):
       title.append(data_sum[i][j]['title'])
 print(title)
+print(len(title))
 time=[]
-for i in range(17):
-    for j in range(7):
+for i in range(5):
+    for j in range(19):
      time.append(data_sum[i][j]['time'])
+print(len(time))
+
 c={
     "time": time,
     "title": title
 }
+print(c)
 
 ### NTLK　패키니를 이용하여 자연어 처리, 제목 분석
 df_stocks=DataFrame(c)
 df=df_stocks[['time']].copy()
-df["compound"] = ''# compound judgement of sentence tendency 
+df["compound"] = ''# compound sentence tendency judgement
 df["neg"] = ''#negative sentence
 df["neu"] = ''#neutral sentence
 df["pos"] = ''#positive sentence
-
-# need the translate API here
 
 ## conducting the SentimentIntensityAnalyzer
 sid = SentimentIntensityAnalyzer()
@@ -69,6 +74,7 @@ for date, row in df_stocks.T.iteritems():
         print(df_stocks.loc[date, 'title'])
         print(date)
 print(df)
+
 
 
 #### SentimentIntensityAnalyzer test 
