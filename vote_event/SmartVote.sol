@@ -33,11 +33,13 @@ contract Ballot{
         token_amount=0;
     }
     
+    //Making some functions that only the creators can access
     modifier onlyCreator(){
         require(msg.sender == creator);
         _;
     }
-    
+    //initializing values
+    //choice->the amount of selection
     function initBallot(uint _choice) onlyCreator{
         choice=_choice;
         token_amount=Token(token).balanceOf(address(this));
@@ -60,6 +62,8 @@ contract Ballot{
         Voter_list[chairperson].voted=false;
         
     }*/
+    
+    //checking the winner
     function Winner_Selection() onlyCreator returns (uint,uint,uint){
         for(i=0;i<choice;i++)
         {
@@ -71,12 +75,13 @@ contract Ballot{
         return (winner_index, Selection_list[winner_index].vote_count,shared_token);
     }
     
+    //Each voters who selected the winner gets the same amount of reward
     function Share_to_Winner_Voters() onlyCreator{
         shared_token=token_amount/Selection_list[winner_index].vote_count;
         for(i=0;i<Selection_list[winner_index].vote_count;i++)
             {
                 //Selection_list[winner_index].Voted_By[i]->person getting
-                if(!Token(token).transfer(Selection_list[winner_index].Voted_By[i],shared_token)) throw;
+                if(!Token(token).transfer(Selection_list[winner_index].Voted_By[i],shared_token)) revert(); //revert is more efficient than throw for gas consumption
             }
     }
 }
