@@ -26,6 +26,10 @@
 
 5. tx.origin
  절대 tx.origin을 authorization에 사용하지 말 것.
+ 
+6. Array length
+ Array 길이는 255를 넘으면 안된다.
+ 255 넘으면 무한 loop (when i<array.length)
 
 
 권장사항
