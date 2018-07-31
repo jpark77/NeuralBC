@@ -70,16 +70,14 @@ contract Ballot{
     
     //_answer->selecting the answer for the question
     //checking the winner
-    function Winner_Selection(uint _answer) onlyCreator returns (uint,uint,uint){
+    function Winner_Selection(uint _answer) onlyCreator{
         require(now>end);
         require(_answer<choice);
         answer=_answer;
         shared_token=token_amount/Selection_list[answer].vote_count;
-        return (answer, Selection_list[answer].vote_count,shared_token);
     }
     
     function Winner_Selection_Check() onlyCreator public view returns(uint,uint,uint){
-        require(now>end);
         return (answer, Selection_list[answer].vote_count,shared_token);
     }
     
