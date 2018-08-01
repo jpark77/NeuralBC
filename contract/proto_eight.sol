@@ -36,27 +36,27 @@ contract Exchange is SafeMath{
     uint256 public total_tok;
     uint256 ratio_eth;
     uint256 ratio_tok;
-    uint for_ratio=10000;
+    uint for_ratio;
 
-    uint256 public eth_idx=0;
+    uint256 public eth_idx;
     mapping(uint256=>uint256) public eth_amt;
     mapping(address=>mapping(uint256=>uint256)) public eth_deposit_idx; // equal to eth_idx
     mapping(address=>uint256) public eth_deposit_len; // address's deposit length
 
-    uint256 public tok_idx=0;
+    uint256 public tok_idx;
     mapping(uint=>uint) public tok_amt;
     mapping(address=>mapping(uint256=>uint256)) public tok_deposit_idx;
     mapping(address=>uint256) public tok_deposit_len;
 
     uint256 exchange_total_eth;
     uint256 exchange_total_tok;
-    bool firstWithdraw=true;
-    bool firstEth=true;
-    bool firstTok=true;
-    bool eth_excess=false;
-    bool tok_excess=false;
-    uint256 e2t_limit=0;
-    uint256 t2e_limit=0;
+    bool firstWithdraw;
+    bool firstEth;
+    bool firstTok;
+    bool eth_excess;
+    bool tok_excess;
+    uint256 e2t_limit;
+    uint256 t2e_limit;
     uint256 max_e2t_tok;
     uint256 max_t2e_tok;
     
@@ -68,6 +68,13 @@ contract Exchange is SafeMath{
     uint partly_e2t;
     uint partly_t2e;
     
+    event Deposit_Ether(address user, uint amount);
+    event Deposit_Token(address token, address user, uint amount);
+    event Withdraw_Token(address token, address user, uint amount);
+    event Withdraw_Ether(address user, uint amount);
+    event Sendback_Token(address token, address user, uint amount);
+    event Sendback_Ether(address user, uint amount);
+    
     modifier DepositTime(){
         //require(now>=start && now<finish-300);
         _;
@@ -78,8 +85,10 @@ contract Exchange is SafeMath{
         _;
     }
     
-    
     constructor(address _token,uint256 _min_ratio,uint256 _max_ratio,uint256 _max_deposit_eth) public{
+        require(_min_ratio<=_max_ratio);
+        for_ratio=10000;
+        
         token=_token;
         min_ratio=_min_ratio;
         max_ratio=_max_ratio;
@@ -87,6 +96,12 @@ contract Exchange is SafeMath{
         max_deposit_tok=max_deposit_eth*max_ratio/for_ratio;
         min_deposit_eth=1*(10**18);
         min_deposit_tok=min_deposit_eth*min_ratio/for_ratio;
+
+        firstWithdraw=true;
+        firstEth=true;
+        firstTok=true;
+        eth_excess=false;
+        tok_excess=false;
     }
     
     function DepositEther() payable DepositTime external{
@@ -98,7 +113,8 @@ contract Exchange is SafeMath{
         //update info(total, ratio)
         total_eth+=msg.value;
         ratio_eth=total_tok*for_ratio/total_eth;
-        ratio_tok=(total_tok==0)? 0:total_eth*for_ratio/total_tok;        
+        ratio_tok=(total_tok==0)? 0:total_eth*for_ratio/total_tok;
+        emit Deposit_Ether(msg.sender, msg.value);
     }
     
     function DepositToken(uint256 amount) DepositTime external{
@@ -111,7 +127,9 @@ contract Exchange is SafeMath{
         //update info(total, ratio)
         total_tok+=amount;
         ratio_eth = (total_eth==0)? 0:total_tok*for_ratio/total_eth;
-        ratio_tok = total_eth*for_ratio/total_tok;         
+        ratio_tok = total_eth*for_ratio/total_tok;     
+        emit Deposit_Token(token, msg.sender, amount);
+
     }
     
     function Withdraw() WithdrawTime external{
@@ -168,22 +186,26 @@ contract Exchange is SafeMath{
         //ether to token
         for(i=0;i<eth_deposit_len[msg.sender];i++){
             idx=eth_deposit_idx[msg.sender][i];
-            if(idx<e2t_limit || (!eth_excess&&ratio_eth!=0)){
+            if(idx<e2t_limit){
                 tok_send=eth_amt[eth_deposit_idx[msg.sender][i]]*eth_withdraw_ratio/for_ratio;
                 eth_amt[eth_deposit_idx[msg.sender][i]]=0;
-                require(Token(token).transferFrom(msg.sender,address(this),tok_send)); //send token
+                require(Token(token).transfer(msg.sender,tok_send)); //send token
+                emit Withdraw_Token(token, msg.sender, tok_send);
             }else if(idx>t2e_limit){ 
                 eth_back=eth_amt[eth_deposit_idx[msg.sender][i]];
                 eth_amt[eth_deposit_idx[msg.sender][i]]=0;
                 require(msg.sender.call.value(eth_back)()); //send back ether
+                emit Sendback_Ether(msg.sender, eth_back);
             }else{ 
                 eth_back=eth_amt[eth_deposit_idx[msg.sender][i]];
                 eth_amt[eth_deposit_idx[msg.sender][i]]=0;
                 require(msg.sender.call.value(eth_back)()); //send back ether
+                emit Sendback_Ether(msg.sender, eth_back);
                 if(partly_e2t!=0){
                     tok_send=partly_e2t*eth_withdraw_ratio/for_ratio;
                     partly_e2t=0;
-                    require(Token(token).transferFrom(msg.sender, address(this),tok_send)); //send token partly
+                    require(Token(token).transfer(msg.sender, tok_send)); //send token partly
+                    emit Withdraw_Token(token, msg.sender, tok_send);
                 }
             }
         }
@@ -191,27 +213,40 @@ contract Exchange is SafeMath{
         //token to ether
         for(i=0;i<tok_deposit_len[msg.sender];i++){
             idx=eth_deposit_idx[msg.sender][i];
-            if(idx<t2e_limit || (!tok_excess&&ratio_eth!=0)){
+            if(idx<t2e_limit){
                 eth_send=tok_amt[tok_deposit_idx[msg.sender][i]]*tok_withdraw_ratio/for_ratio;
                 tok_amt[tok_deposit_idx[msg.sender][i]]=0;
                 require(msg.sender.call.value(eth_send)()); //send ether
+                emit Withdraw_Ether(msg.sender, eth_send);
             }else if(idx>t2e_limit){ 
                 tok_back=tok_amt[tok_deposit_idx[msg.sender][i]];
                 tok_amt[tok_deposit_idx[msg.sender][i]]=0;
-                require(Token(token).transferFrom(msg.sender, address(this), tok_back)); //send back token
+                require(Token(token).transfer(msg.sender, tok_back)); //send back token
+                emit Sendback_Token(token, msg.sender, eth_back);
             }else{ 
                 tok_back=tok_amt[tok_deposit_idx[msg.sender][i]];
                 tok_amt[tok_deposit_idx[msg.sender][i]]=0;
-                require(Token(token).transferFrom(msg.sender, address(this), tok_back)); //send back token
+                require(Token(token).transfer(msg.sender, tok_back)); //send back token
+                emit Sendback_Token(token, msg.sender, eth_back);
                 if(partly_t2e!=0){
                     eth_send=partly_t2e*tok_withdraw_ratio/for_ratio;
                     partly_t2e=0;
                     require(msg.sender.call.value(eth_send)()); //send ether patly
+                    emit Withdraw_Ether(msg.sender, eth_send);
                 }
             }
         }
-    
     }
+    
+    function Ethbalance() public view returns (uint Eth){
+        return address(this).balance;
+    }
+
+    function Tokbalance() public view returns (uint256 Tok){
+        return Token(token).balanceOf(address(this));
+    }
+    
+    
 }
 
 contract Token {
