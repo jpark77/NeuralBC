@@ -68,18 +68,28 @@ contract Exchange is SafeMath{
     uint partly_e2t;
     uint partly_t2e;
     
+    modifier DepositTime(){
+        //require(now>=start && now<finish-300);
+        _;
+    }
+    
+    modifier WithdrawTime(){
+        //require(now>finish);
+        _;
+    }
+    
     
     constructor(address _token,uint256 _min_ratio,uint256 _max_ratio,uint256 _max_deposit_eth) public{
         token=_token;
         min_ratio=_min_ratio;
         max_ratio=_max_ratio;
         max_deposit_eth=_max_deposit_eth;
-        max_deposit_tok=max_deposit_eth*max_ratio;
+        max_deposit_tok=max_deposit_eth*max_ratio/for_ratio;
         min_deposit_eth=1*(10**18);
-        min_deposit_tok=min_deposit_eth*min_ratio;
+        min_deposit_tok=min_deposit_eth*min_ratio/for_ratio;
     }
     
-    function DepositEther() payable external{
+    function DepositEther() payable DepositTime external{
         require(msg.value >= min_deposit_eth && total_eth+msg.value <= max_deposit_eth); //check min, max allowance
         require(total_eth+msg.value > total_eth); //prevent overflow        
         
@@ -91,19 +101,20 @@ contract Exchange is SafeMath{
         ratio_tok=(total_tok==0)? 0:total_eth*for_ratio/total_tok;        
     }
     
-    function DepositToken(uint256 _amount) external{
-        require(_amount >= min_deposit_tok && total_tok+_amount <= max_deposit_tok); //check min, max allowance
-        require(total_tok+_amount > total_tok); //prevent overflow
+    function DepositToken(uint256 amount) DepositTime external{
+        require(amount >= min_deposit_tok && total_tok+amount <= max_deposit_tok); //check min, max allowance
+        require(total_tok+amount > total_tok); //prevent overflow
         
-        require(Token(token).transferFrom(msg.sender, address(this), _amount));
-        tok_amt[tok_idx]=_amount;
+        require(Token(token).transferFrom(msg.sender, address(this), amount));
+        tok_amt[tok_idx]=amount;
         tok_deposit_idx[msg.sender][tok_deposit_len[msg.sender]++]=tok_idx++;
         //update info(total, ratio)
-        ratio_eth = (total_eth==0)? 0 : total_tok*for_ratio / total_eth;
-        ratio_tok = total_eth*for_ratio / total_tok;         
+        total_tok+=amount;
+        ratio_eth = (total_eth==0)? 0:total_tok*for_ratio/total_eth;
+        ratio_tok = total_eth*for_ratio/total_tok;         
     }
     
-    function Withdraw() external{
+    function Withdraw() WithdrawTime external{
         uint i;
         uint idx;
         //calculate ratio
