@@ -1,0 +1,13 @@
+1. Array와 Map
+ Map이 Gas Cost가 더 적다.
+ Array는 실제로 다음과 같다.
+ 
+struct Array{
+  mapping(uint => someType) items;
+  uint length;
+}
+
+2. 띄어쓰기 다 없애기
+ gas cost 줄임
+
+3. 중복되는 연 최대한 없애기
