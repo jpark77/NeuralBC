@@ -262,4 +262,4 @@ contract Token {
 
   uint public decimals;
   string public name;
-}
+
