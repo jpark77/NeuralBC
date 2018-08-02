@@ -1,3 +1,7 @@
+### Objective
+앞으로 2시간 이후의 암호화폐 가격 예측을 위해서, 2시간 단위의 거래가격, 거래량 정보를 기본으로 학습을 시켜서 모델링하고,   
+그 외의 변수들을 다양하게 학습데이터에 반영하여 총 10가지의 모델들이 가격예측정확도를 경쟁하도록 만든다.
+
 ### Our Test model
 ##### WSAEs-LSTM = Wavelet Transform + Stacked Autoencoder + LSTM From
 ##### Bao W, Yue J, Rao Y (2017) A deep learning framework for financial time series using stacked autoencoders and long-short term memory. PLOS ONE 12(7): e0180944.
@@ -22,7 +26,7 @@ JSON
   'volume_traded': 993.32690311}, ... 
   
 ##### 테이블 스키마(schema)
-##### OHLC_BTCvsUSD (From https://kr.investing.com/crypto/currencies)
+##### OHLC_BTCvsUSD (2hrs)
 
 | Close       | High       | Low       | Open       | Date       | Volume        |
 | ----------- | ---------- | --------- | ---------- | ---------- | ------------- |
