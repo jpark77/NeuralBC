@@ -47,12 +47,13 @@ Keras (based on Tensorflow) vs Gluon (based on MXNet)
 | Instance                     | GPU | GPU memory | 1 month (USD) | 1 yr (USD) |
 | ---------------------------- | --- | ---------- | ------------- | ---------- |
 | custom-8-62-extended (Taiwan) | 1   |   16 GB    |  557.63      | 6331.5     |  
+### 3. MS Azure  
+Google Cloud의 단점을 그대로 가지고 있으며, 딥러닝 서비스의 안정성이 검증되지 않았음
+
+### 4. Naver Cloud
+Nvidia Tesla Pascal GPU만 제공해주기 때문에, 성능이 다른 클라우드보다 떨어질 수 밖에 없음   
 
 ---------------------------------------------------
-
-
-
-
 
 
 # 데이터 수집
