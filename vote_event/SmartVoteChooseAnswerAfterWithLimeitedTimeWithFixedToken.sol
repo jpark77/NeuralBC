@@ -58,7 +58,7 @@ contract Ballot{
     }
     //after the limited time exceeds you cannot vote
     function Voting(uint _vote_to){
-        //require(now<end);
+        require(now<end);
         require(_vote_to<=choice-1);  
         chairperson=msg.sender;
         require(!Voter_list[chairperson].voted);
