@@ -15,15 +15,16 @@ contract Ballot{
     address creator;
     
     uint i;
-    uint public token_amount;
-    uint shared_token;
+    uint public total_token;
+    uint public deposit_token;
+    uint public fixed_token;
     uint choice;
     uint answer;
     uint end;
     uint public start;
     
     bool winner_selected;
-    bool share_sent;
+    bool token_sent;
     mapping(address=>Voter) Voter_list;
     mapping(uint=>Selection) public Selection_list;
     
@@ -32,10 +33,11 @@ contract Ballot{
     function Ballot(address _token){
         creator=msg.sender;
         token=_token;
-        shared_token=0;
-        token_amount=0;
+        fixed_token=0;
+        total_token=0;
+        deposit_token=0;
         winner_selected=false;
-        share_sent=false;
+        token_sent=false;
     }
     
     //Making some functions that only the creators can access
@@ -46,16 +48,17 @@ contract Ballot{
     //initializing values
     //choice->the amount of selection
     //setting the limited time for voting
-    function initBallot(uint _choice,uint _limitedtime) onlyCreator{
+    function initBallot(uint _choice,uint _limitedtime,uint _fixed_token) onlyCreator{
         choice=_choice;
-        token_amount=Token(token).balanceOf(address(this));
+        fixed_token=_fixed_token;
+        //token_amount=Token(token).balanceOf(address(this));
         start=now;
         end=now+_limitedtime;
         
     }
     //after the limited time exceeds you cannot vote
     function Voting(uint _vote_to){
-        require(now<end);
+        //require(now<end);
         require(_vote_to<=choice-1);  
         chairperson=msg.sender;
         require(!Voter_list[chairperson].voted);
@@ -75,31 +78,34 @@ contract Ballot{
     
     //_answer->selecting the answer for the question
     //checking the winner
+    //calculating total_token
     function Winner_Selection(uint _answer) onlyCreator{
         require(now>end);
         require(!winner_selected);
         require(_answer<choice);
         answer=_answer;
         winner_selected=true;
-        shared_token=token_amount/Selection_list[answer].vote_count;
+        total_token=fixed_token*Selection_list[answer].vote_count;
+        //deposit_token=Token(token).balanceOf(address(this));
     }
     
     
-    function Winner_Selection_Check() view returns(uint,uint,uint){
-        return (answer, Selection_list[answer].vote_count,shared_token);
+    function Winner_Selection_Check() view returns(uint,uint,uint,uint,uint){
+        return (answer, Selection_list[answer].vote_count,total_token,deposit_token,fixed_token);
     }
     
     //Each voters who selected the answer gets the same amount of reward
     function Share_to_Winner_Voters() onlyCreator{
-        require(!share_sent);
+        deposit_token=Token(token).balanceOf(address(this));
+        require(total_token*10**18==deposit_token); //checking whether the amount is equal as expected
+        require(!token_sent);
         require(now>end);
-        shared_token=token_amount/Selection_list[answer].vote_count;
         for(i=0;i<Selection_list[answer].vote_count;i++)
             {
                 //Selection_list[winner_index].Voted_By[i]->person getting
-                require(Token(token).transfer(Selection_list[answer].Voted_By[i],shared_token)); 
+                require(Token(token).transfer(Selection_list[answer].Voted_By[i],deposit_token/Selection_list[answer].vote_count)); 
             }
-        share_sent=true;
+        token_sent=true;
     }
 }
 
