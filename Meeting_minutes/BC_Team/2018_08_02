@@ -1,0 +1,18 @@
+TeamBC
+
+1. 거래소 smart contract
+ -Contract 기본 기능 구현 완료
+ -첫 출금자에게 Gas 지원 관련 조사 필요
+ -Contract가 Gas 부담 가능한지 조사 필요
+ -Admin 기능 미정
+ -보안 계속 확인 중, 추후 테스팅 필요
+
+2. 투표 smart contract
+ -proto type 완성
+ -총 금액을 당첨자 수로 나눠서 제공하는 방법과 당첨자에게 일정 금액을 제공하는 방법 두 가지로 구현
+ 
+3. Smart contract를 웹으로 이용가능하게 구현
+-거래소 smart contract 기본 기능 테스팅 내일까지 구현 (메타마스크 이용)
+
+4. CosmicBC 사이트
+ -워드프레스로 작업 중
