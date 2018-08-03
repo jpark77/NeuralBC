@@ -17,7 +17,17 @@
 ##### 종류 : OHLC(Open High Low Close) price, Trading Volume, Market issues, etc
 OHLC의 경우는 JSON, csv와 같은 준정형데이터(Semi-structured data)형태로 가지고 올 수 있어서 쉽게 정형데이터(Structured data)로 가공할 수 있음
 
-JSON
+#### Source 1 : xe.com  
+실시간 Exchange rate 뿐만 아니라 Historic hourly data도 제공, REST API만 날리면 json혹은 csv방식으로 data response를 받을 수 있다. 단점은 암호화폐는 Bitcoin만 가능하고, 원하는 시간의 중간 가격을 제공해서 OHLC를 정확히 구할 수 없음, 거래량을 제공해 주지 않음
+
+> curl -i -u account_id:api_key "https://xecdapi.xe.com/v1/convert_from.json/?from=XBT&to=USD&amount=1"
+
+#### Source 2 : [Kaggle-Bitcoin Historical Data](https://www.kaggle.com/mczielinski/bitcoin-historical-data)  
+각종 dataset을 제공해주는 Kaggle에서 Bitcoin Historycal data csv파일을 제공해준다.
+2012년 1월 부터 현재까지 OHLCV를 제공, 단점은 공신력에 의문이 있고, 1분 단위 데이터라는 점
+
+
+JSON 형식
 > {'price_close': 6.31,
   'price_high': 7.1,
   'price_low': 5.52,
@@ -25,7 +35,7 @@ JSON
   'time_close': '2012-01-25T21:37:14.0000000Z',
   'volume_traded': 993.32690311}, ... 
   
-##### 테이블 스키마(schema)
+#### 테이블 스키마(schema)
 ##### OHLC_BTCvsUSD (2hrs)
 
 | Close       | High       | Low       | Open       | Date       | Volume        |
