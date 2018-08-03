@@ -38,7 +38,7 @@ contract Ballot{
         deposit_token=0;
         winner_selected=false;
         token_sent=false;
-    }
+    } 
     
     //Making some functions that only the creators can access
     modifier onlyCreator(){
