@@ -1,4 +1,4 @@
-pragma solidity 0.4.24;
+ pragma solidity 0.4.24;
 
 contract Ballot{
     struct Voter{
@@ -21,6 +21,9 @@ contract Ballot{
     uint answer;
     uint end;
     uint public start;
+    
+    bool winner_selected;
+    bool share_sent;
     mapping(address=>Voter) Voter_list;
     mapping(uint=>Selection) public Selection_list;
     
@@ -31,6 +34,8 @@ contract Ballot{
         token=_token;
         shared_token=0;
         token_amount=0;
+        winner_selected=false;
+        share_sent=false;
     }
     
     //Making some functions that only the creators can access
@@ -72,24 +77,29 @@ contract Ballot{
     //checking the winner
     function Winner_Selection(uint _answer) onlyCreator{
         require(now>end);
+        require(!winner_selected);
         require(_answer<choice);
         answer=_answer;
+        winner_selected=true;
         shared_token=token_amount/Selection_list[answer].vote_count;
     }
     
-    function Winner_Selection_Check() onlyCreator public view returns(uint,uint,uint){
+    
+    function Winner_Selection_Check() view returns(uint,uint,uint){
         return (answer, Selection_list[answer].vote_count,shared_token);
     }
     
     //Each voters who selected the answer gets the same amount of reward
     function Share_to_Winner_Voters() onlyCreator{
+        require(!share_sent);
         require(now>end);
         shared_token=token_amount/Selection_list[answer].vote_count;
         for(i=0;i<Selection_list[answer].vote_count;i++)
             {
                 //Selection_list[winner_index].Voted_By[i]->person getting
-                if(!Token(token).transfer(Selection_list[answer].Voted_By[i],shared_token)) revert(); //revert is more efficient than throw for gas consumption
+                require(Token(token).transfer(Selection_list[answer].Voted_By[i],shared_token)); 
             }
+        share_sent=true;
     }
 }
 
