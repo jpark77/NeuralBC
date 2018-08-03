@@ -46,7 +46,7 @@ Keras (based on Tensorflow) vs Gluon (based on MXNet)
 저렴한 가격과 자원 사용 현황을 파악하기 편한 깔끔한 웹 인터페이스를 제공한다는 것이 장점. Nvidia Tesla Volta 급의 최신 GPU를 제공해주는 location이 미중부와 타이완에 있고, 후발 주자라는 점에서 안정성이 의심되고 MXNet을 지원해주는지 여부가 불투명    
 | Instance                     | GPU | GPU memory | 1 month (USD) | 1 yr (USD) |
 | ---------------------------- | --- | ---------- | ------------- | ---------- |
-| custom-8-62-extended (Taiwan) | 1   |   16 GB    |  557.63      | 6331.5     |
+| custom-8-62-extended (Taiwan) | 1   |   16 GB    |  557.63      | 6331.5     |  
 
 ---------------------------------------------------
 
