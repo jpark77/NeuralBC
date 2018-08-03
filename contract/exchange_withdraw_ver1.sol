@@ -22,7 +22,6 @@ contract SafeMath {
 
 contract TokenExchange is SafeMath {
     
-    address public creator;
     address public token;
     uint public min_ratio;
     uint public max_ratio;
@@ -61,8 +60,8 @@ contract TokenExchange is SafeMath {
     
     uint public fee_eth;
     uint public fee_tok;
-    uint for_fee1;
-    uint for_fee2;
+    uint for_fee1=999;
+    uint for_fee2=1000;
     
     uint earlier_tok_sum;
     uint earlier_eth_sum;
@@ -94,23 +93,21 @@ contract TokenExchange is SafeMath {
     uint tok_send;
     
     modifier DepositTime(){
-        //require(now>=start && now<finish-300);
+        require(now>=start && now<finish-300);
         _;
     }
     
     modifier WithdrawTime(){
-        //require(now>finish);
+        require(now>finish);
         _;
     }
     
     constructor(address _token, uint _min_ratio, uint _max_ratio, uint _eth_max_amt, uint _start, uint _finish) public{
         require(_max_ratio>=_min_ratio);
-        creator = msg.sender;
         token = _token;
 
         max_ratio = _max_ratio;
         min_ratio = _min_ratio;
-        
         ratio = 4;
         for_ratio = 10**ratio;
         ratio_eth = 0;
@@ -127,14 +124,11 @@ contract TokenExchange is SafeMath {
         eth_index = 0;
         tok_index = 0;
         
-        for_fee1=999; //for_fee1 = _for_fee1;
-        for_fee2=1000; //for_fee2 = _for_fee2;
-        
         start = _start;
         finish = _finish;
     }
     
-    function depositEther() payable DepositTime external {
+    function depositEther() payable external {
         require(msg.value >= eth_min_amt && total_eth+msg.value <= eth_max_amt); //check min, max allowance
         require(total_eth+msg.value > total_eth); //prevent overflow
 
@@ -149,7 +143,7 @@ contract TokenExchange is SafeMath {
         ratio_tok = (total_tok==0)? 0 : total_eth*for_ratio / total_tok;
     }
 
-    function depositToken(uint amount) DepositTime external {
+    function depositToken(uint amount) external {
         require(amount >= tok_min_amt && total_tok+amount <= tok_max_amt); //check min, max allowance
         require(total_tok+amount > total_tok); //prevent overflow
         
@@ -168,7 +162,7 @@ contract TokenExchange is SafeMath {
     }
 
     //tok to eth, for tok_users
-    function withdrawEther() WithdrawTime external{
+    function withdrawEther() external{
 
         if (ratio_first){
             if( ratio_eth<min_ratio && ratio_eth!=0 ){
@@ -222,6 +216,7 @@ contract TokenExchange is SafeMath {
                     rest_tok_eth = 0;
                     require(msg.sender.call.value(eth_send)()); //send ether partly                    
                 }
+
             }
         }
     }

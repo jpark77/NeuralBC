@@ -75,6 +75,7 @@ for date, row in df_stocks.T.iteritems():
         print(date)
 print(df)
 
+df.to_csv ("Market_Issue.csv" )
 
 
 #### SentimentIntensityAnalyzer test 
