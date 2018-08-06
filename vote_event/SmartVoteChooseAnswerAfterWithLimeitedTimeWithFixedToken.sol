@@ -23,6 +23,7 @@ contract Ballot{
     uint end;
     uint public start;
     
+    bool initialized;
     bool winner_selected;
     bool token_sent;
     mapping(address=>Voter) Voter_list;
@@ -35,9 +36,10 @@ contract Ballot{
         token=_token;
         fixed_token=0;
         total_token=0;
-        deposit_token=0;
+        deposit_token=Token(token).balanceOf(address(this));
         winner_selected=false;
         token_sent=false;
+        initialized=false;
     } 
     
     //Making some functions that only the creators can access
@@ -49,11 +51,14 @@ contract Ballot{
     //choice->the amount of selection
     //setting the limited time for voting
     function initBallot(uint _choice,uint _limitedtime,uint _fixed_token) onlyCreator{
+        require(!initialized);
         choice=_choice;
         fixed_token=_fixed_token;
         //token_amount=Token(token).balanceOf(address(this));
+        initialized=true;
         start=now;
         end=now+_limitedtime;
+
         
     }
     //after the limited time exceeds you cannot vote
@@ -88,7 +93,12 @@ contract Ballot{
         total_token=fixed_token*Selection_list[answer].vote_count;
         //deposit_token=Token(token).balanceOf(address(this));
     }
-    
+    //checking the current deposited amount of token
+    function Check_The_Deposit() returns (uint){
+        require(now>end);
+        deposit_token=Token(token).balanceOf(address(this));
+        return deposit_token;
+    }
     
     function Winner_Selection_Check() view returns(uint,uint,uint,uint,uint){
         return (answer, Selection_list[answer].vote_count,total_token,deposit_token,fixed_token);
