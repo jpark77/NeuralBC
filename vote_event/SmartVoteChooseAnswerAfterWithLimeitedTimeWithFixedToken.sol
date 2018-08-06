@@ -94,7 +94,7 @@ contract Ballot{
         //deposit_token=Token(token).balanceOf(address(this));
     }
     //checking the current deposited amount of token
-    function Check_The_Deposit() returns (uint){
+    function Check_The_Deposit() onlyCreator returns (uint){
         require(now>end);
         deposit_token=Token(token).balanceOf(address(this));
         return deposit_token;
