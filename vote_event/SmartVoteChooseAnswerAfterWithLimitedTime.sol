@@ -1,4 +1,4 @@
- pragma solidity 0.4.24;
+pragma solidity 0.4.24;
 
 contract Ballot{
     struct Voter{
@@ -22,6 +22,7 @@ contract Ballot{
     uint end;
     uint public start;
     
+    bool initialized;
     bool winner_selected;
     bool share_sent;
     mapping(address=>Voter) Voter_list;
@@ -36,6 +37,7 @@ contract Ballot{
         token_amount=0;
         winner_selected=false;
         share_sent=false;
+        initialized=false;
     }
     
     //Making some functions that only the creators can access
@@ -47,8 +49,10 @@ contract Ballot{
     //choice->the amount of selection
     //setting the limited time for voting
     function initBallot(uint _choice,uint _limitedtime) onlyCreator{
+        require(!initialized);
         choice=_choice;
         token_amount=Token(token).balanceOf(address(this));
+        initialized=true;
         start=now;
         end=now+_limitedtime;
         
@@ -73,6 +77,7 @@ contract Ballot{
         
     }*/
     
+    
     //_answer->selecting the answer for the question
     //checking the winner
     function Winner_Selection(uint _answer) onlyCreator{
@@ -85,8 +90,8 @@ contract Ballot{
     }
     
     
-    function Winner_Selection_Check() view returns(uint,uint,uint){
-        return (answer, Selection_list[answer].vote_count,shared_token);
+    function Winner_Selection_Check() view returns(uint,uint,uint,uint){
+        return (answer, Selection_list[answer].vote_count,token_amount,shared_token);
     }
     
     //Each voters who selected the answer gets the same amount of reward
