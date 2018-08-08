@@ -62,6 +62,7 @@ contract Ballot{
     
     function VotingSystem(uint _vote_to){
         chairperson=msg.sender;
+        require(Voter_list[chairperson].vote_to!=_vote_to);
         if(!Voter_list[chairperson].voted)
             Voting(_vote_to);
         else
