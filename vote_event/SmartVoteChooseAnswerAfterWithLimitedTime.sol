@@ -29,7 +29,6 @@ contract Ballot{
     mapping(uint=>Selection) public Selection_list;
     
     
-    
     function Ballot(address _token){
         creator=msg.sender;
         token=_token;
@@ -52,6 +51,7 @@ contract Ballot{
         require(!initialized);
         choice=_choice;
         token_amount=Token(token).balanceOf(address(this));
+        require(token_amount>0,"No token deposited");
         initialized=true;
         start=now;
         end=now+_limitedtime;
@@ -68,7 +68,7 @@ contract Ballot{
         //require(Voter_list[chairperson].vote_to==_vote_to);
         uint temp=Selection_list[Voter_list[chairperson].vote_to].vote_count;
         Selection_list[Voter_list[chairperson].vote_to].Voted_By[temp]=chairperson;
-        Selection_list[Voter_list[chairperson].vote_to].vote_count++;
+        Selection_list[Voter_list[chairperson].vote_to].  vote_count++;
     }
     
     /*function CancelVoting(){
