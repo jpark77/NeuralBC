@@ -61,6 +61,7 @@ contract Ballot{
     }
     
     function VotingSystem(uint _vote_to){
+        require(now<end);
         chairperson=msg.sender;
         require(Voter_list[chairperson].vote_to!=_vote_to);
         if(!Voter_list[chairperson].voted)
@@ -71,7 +72,7 @@ contract Ballot{
     
     //after the limited time exceeds you cannot vote
     function Voting(uint _vote_to) internal{
-        require(now<end);
+        //require(now<end);
         require(_vote_to<=choice-1);  
         chairperson=msg.sender;
         require(!Voter_list[chairperson].voted);
@@ -86,7 +87,7 @@ contract Ballot{
     
     //If the voter wants to change his mind
     function ChangeVoting(uint _vote_to) internal{
-        require(now<end); 
+        //require(now<end); 
         chairperson=msg.sender;
         require(Voter_list[chairperson].voted);
         for(i=0;i<Selection_list[Voter_list[chairperson].vote_to].vote_count-1;i++)
