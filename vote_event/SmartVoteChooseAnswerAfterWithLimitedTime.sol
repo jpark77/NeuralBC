@@ -21,6 +21,7 @@ contract Ballot{
     uint answer;
     uint end;
     uint public start;
+    uint find_index;
     
     bool initialized;
     bool winner_selected;
@@ -44,6 +45,7 @@ contract Ballot{
         require(msg.sender == creator);
         _;
     }
+    
     //initializing values
     //choice->the amount of selection
     //setting the limited time for voting
@@ -57,8 +59,17 @@ contract Ballot{
         end=now+_limitedtime;
         
     }
+    
+    function VotingSystem(uint _vote_to){
+        chairperson=msg.sender;
+        if(!Voter_list[chairperson].voted)
+            Voting(_vote_to);
+        else
+            ChangeVoting(_vote_to);
+    }
+    
     //after the limited time exceeds you cannot vote
-    function Voting(uint _vote_to){
+    function Voting(uint _vote_to) internal{
         require(now<end);
         require(_vote_to<=choice-1);  
         chairperson=msg.sender;
@@ -68,18 +79,36 @@ contract Ballot{
         //require(Voter_list[chairperson].vote_to==_vote_to);
         uint temp=Selection_list[Voter_list[chairperson].vote_to].vote_count;
         Selection_list[Voter_list[chairperson].vote_to].Voted_By[temp]=chairperson;
-        Selection_list[Voter_list[chairperson].vote_to].  vote_count++;
+        Selection_list[Voter_list[chairperson].vote_to].vote_count++;
     }
     
     
-    /*We might someday open the cancel service if it's needed and we will modify the function
-    function CancelVoting(){
-        require(now<end);
+    //If the voter wants to change his mind
+    function ChangeVoting(uint _vote_to) internal{
+        require(now<end); 
         chairperson=msg.sender;
         require(Voter_list[chairperson].voted);
+        for(i=0;i<Selection_list[Voter_list[chairperson].vote_to].vote_count-1;i++)
+        {
+            if(Selection_list[Voter_list[chairperson].vote_to].Voted_By[i]==chairperson)
+            {
+                find_index=i;
+                break;
+            }
+        }
+        require(find_index<Selection_list[Voter_list[chairperson].vote_to].vote_count);
+        for(i=find_index;i<Selection_list[Voter_list[chairperson].vote_to].vote_count-1;i++)
+            Selection_list[Voter_list[chairperson].vote_to].Voted_By[i]=Selection_list[Voter_list[chairperson].vote_to].Voted_By[i+1];
+        delete Selection_list[Voter_list[chairperson].vote_to].Voted_By[i];
+        
         Voter_list[chairperson].voted=false;
         Selection_list[Voter_list[chairperson].vote_to].vote_count--;
-    }*/
+        Voter_list[chairperson].voted=true;
+        Voter_list[chairperson].vote_to=_vote_to;
+        uint temp=Selection_list[Voter_list[chairperson].vote_to].vote_count;
+        Selection_list[Voter_list[chairperson].vote_to].Voted_By[temp]=chairperson;
+        Selection_list[Voter_list[chairperson].vote_to].vote_count++;
+    }
     
     //_answer->selecting the answer for the question
     //checking the winner
