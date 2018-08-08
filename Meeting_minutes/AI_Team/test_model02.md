@@ -1,7 +1,7 @@
 ## Test in Local Environment
   
 1 Simple LSTM  
-Dataset : OHLCV daily (290 days)  = 261 Training + 29 Test set  
+Dataset : OHLCV daily (500 days)  = 300 Training + 200 Test set  
 Batch : 25 randomized batch & 220 Time-series observations (261 training data 중에서 무작위로 220 days를 25가지 뽑음)  
 Prediction : 이틀 뒤(t+2)의 Closed price를 예측    
 
