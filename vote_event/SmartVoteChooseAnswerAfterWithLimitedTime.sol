@@ -71,12 +71,15 @@ contract Ballot{
         Selection_list[Voter_list[chairperson].vote_to].  vote_count++;
     }
     
-    /*function CancelVoting(){
-        chairperson=msg.sender;
-        Voter_list[chairperson].voted=false;
-        
-    }*/
     
+    /*We might someday open the cancel service if it's needed and we will modify the function
+    function CancelVoting(){
+        require(now<end);
+        chairperson=msg.sender;
+        require(Voter_list[chairperson].voted);
+        Voter_list[chairperson].voted=false;
+        Selection_list[Voter_list[chairperson].vote_to].vote_count--;
+    }*/
     
     //_answer->selecting the answer for the question
     //checking the winner
