@@ -10,9 +10,9 @@ Training error = 0.0057
 Validation error = 0.2608  
 Test error = 0.17496411502361298    
 Training Data  
-![alt text](./LSTM_pilot_train.PNG)  
+![alt text](./LSTM_pilot_train.png)  
 Test Data  
-![alt text](./LSTM_pilot_test.PNG)
+![alt text](./LSTM_pilot_test.png)
   
 Overfitting 문제로 Test data에서의 Prediction accuracy가 떨어지는 것을 알 수 있다  
 
