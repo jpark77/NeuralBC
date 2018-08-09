@@ -274,21 +274,11 @@ contract myToken2 is MintableToken, BurnableToken, PausableToken{
         name=tokenName;
         symbol=tokenSymbol;
         decimals=decimalUnit;
-        totalSupply_= initialSupply;
+        totalSupply_ = initialSupply * (10 ** uint256(decimals));
         balances[msg.sender]=totalSupply_;
     }
     
 }
-
-
-
-
-
-
-
-
-
-
 
 
 
