@@ -10,7 +10,7 @@
 # Our Test model
 ##### WSAEs-LSTM = Wavelet Transform + Stacked Autoencoder + LSTM From
 ##### Bao W, Yue J, Rao Y (2017) A deep learning framework for financial time series using stacked autoencoders and long-short term memory. PLOS ONE 12(7): e0180944.
-![alt text](./W_Bao_et_al.PNG)
+![alt text](./Images/W_Bao_et_al.PNG)
 
 ### 참조 모델
 ##### Ciaian P, Rajcaniova M, Kancs d'A(2016) The Economics of BitCoin Price Formation Applied Economics 48(19):1799-1815

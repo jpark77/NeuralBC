@@ -1,22 +1,35 @@
 ## Test in Local Environment
   
-1 Simple LSTM  
-Dataset : OHLCV daily (500 days)  = 300 Training + 200 Test set  
-Batch : 25 randomized batch & 220 Time-series observations (261 training data 중에서 무작위로 220 days를 25가지 뽑음)  
-Prediction : 이틀 뒤(t+2)의 Closed price를 예측    
+1 Simple LSTM - Pilot Step  
 
-6번째 Epoch에서 loss minization 향상이 없어서 Early Stopping  
-Training error = 0.0057  
-Validation error = 0.2608  
-Test error = 0.17496411502361298    
-Training Data  
-![alt text](./LSTM_pilot_train.png)  
-Test Data  
-![alt text](./LSTM_pilot_test.png)
-  
-Overfitting 문제로 Test data에서의 Prediction accuracy가 떨어지는 것을 알 수 있다  
+| Dataset Size     | Batch |  Epoch  | Prediction Time Step | Train Error | Validation Error | Test Error |
+| ---------------- | ----- | ------- | -------------------- | ----------- | ---------------- | ---------- |  
+| 300(Train), 200(Test)| 25  |  20   |      t+2             | 0.0057      |    0.2608           | 0.1749641  | 
+| 480(Train), 320(Test)| 2   |  20   |      t+5             | 0.0132      |     0.0132           | 0.0182414  | 
+| 540(Train), 360(Test)| 3   |  50   |      t+5             | 0.0097      |     0.0032           | 0.00318466 |
+
+
+Training Data (overfitting)  
+![alt text](./Images/LSTM_pilot_train.png)  
+Test Data 1  
+![alt text](./Images/LSTM_pilot_test.png)
+Test Data 2  
+![alt text](./Images/LSTM_pilot2_test.png) 
+Test Data 3  
+![alt text](./Images/LSTM_pilot3_test.png)
+
+Overfitting이 줄고 Prediction accuracy가 많이 좋아진 것을 알 수 있다.
+
 
 ## AWS 
 SageMaker 인스턴스 생성 관련하여 아래와 같은 문제가 생겨서  
 Amazon에 Request를 넣은 상태임  
-![alt text](./Error_message_SageMaker.jpg) 
+![alt text](./Images/Error_message_SageMaker.jpg) 
+Response  
+> Can you please confirm the below information with me :
+1. AWS region for which you wish to increase this limit for [ml.p3.2.xlarge instance] in your account [360516151325] 
+2. Also please confirm the number of instances [ml.p3.2.xlarge] you wish to launch, so i will increase this limit to that number.  
+
+--> Request Again
+Region : "Asia/Seoul",   
+2개 Instances to launch (ml.p3.2.xlarge, ml.p3.8.xlarge.)
