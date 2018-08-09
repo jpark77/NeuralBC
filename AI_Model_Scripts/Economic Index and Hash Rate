@@ -16,3 +16,7 @@ print(Hash_rate)
 
 US_Crude_Oil=quandl.get("FRED/WCOILWTICO", start_date="2012-01-01", end_date="2018-08-09")
 print(US_Crude_Oil)
+
+###Gold Price: London Fixing
+gold_price=quandl.get("LBMA/GOLD", start_date="2012-01-01", end_date="2018-08-09")
+print(gold_price)
