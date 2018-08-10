@@ -45,5 +45,16 @@ for i in range(3):
     collection = db['BTC_hashrate']
 
     collection.insert_many(content)
+
+#import requests
+#import time
+
+#response = requests.get('https://api.xmrpool.net/pool/chart/hashrate')
+#content = response.json()
+#print(content)
+
+##history difficulty--not more than 24hours
+#response = requests.get('https://api.xmrpool.net/network/chart/difficulty/')
+#print(content)
     
     
