@@ -1,0 +1,49 @@
+import quandl
+
+
+quandl.ApiConfig.api_key = "aCgdcxbU99AzFzmfass1"
+
+### the price level of global economy--presented by exchange rate between the U.S. dollar and the Euro
+price_level_data = quandl.get("FED/RXI_US_N_B_EU", start_date="2017-01-01", end_date="2018-07-23")
+print(price_level_data)
+
+### global financial indicators---Dow Jones stock market index
+Dow_Jones_Index_data = quandl.get("FED/FL073164013_Q", start_date="2017-01-01", end_date="2018-07-23")
+print(Dow_Jones_Index_data)
+
+Hash_rate = quandl.get("BCHAIN/HRATE", start_date="2017-01-01", end_date="2018-08-09")
+print(Hash_rate)
+
+US_Crude_Oil=quandl.get("FRED/WCOILWTICO", start_date="2012-01-01", end_date="2018-08-09")
+print(US_Crude_Oil)
+
+###Gold Price: London Fixing
+gold_price=quandl.get("LBMA/GOLD", start_date="2012-01-01", end_date="2018-08-09")
+print(gold_price)
+
+##bitcoin hashrate, mining difficulty--real time
+##hash rate: The current cumulative (estimated) hashrate of all miners on the network in hashes per second.
+import  sys
+import json
+import  requests
+from pymongo import *
+from bson import *
+
+response = requests.get('https://chain.so/api/v2/get_info/BTC')
+
+if response.status_code == 200:
+    # everything went swimmingly                                                                                                                   
+    # parse the response as JSON
+    content= response.json()
+    print ("hashrate", content['data']['hashrate'])
+    print('mining difficulty',content['data']['mining_difficulty'])
+    print ("Total Blocks:", content['data']['blocks'])
+    
+    # Connetion MongoDB
+    client = MongoClient('52.79.241.214', 27017)
+    db = client['Coin']
+    collection = db['BTC_hashrate']
+
+    collection.insert_many(content)
+    
+    
