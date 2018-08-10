@@ -20,3 +20,21 @@ print(US_Crude_Oil)
 ###Gold Price: London Fixing
 gold_price=quandl.get("LBMA/GOLD", start_date="2012-01-01", end_date="2018-08-09")
 print(gold_price)
+
+##bitcoin hashrate, mining difficulty--real time
+import  sys
+import json
+import  requests
+
+response = requests.get('https://chain.so/api/v2/get_info/BTC')
+
+
+
+if response.status_code == 200:
+    # everything went swimmingly                                                                                                                   
+    # parse the response as JSON
+    content = response.json()
+    print ("hashrate", content['data']['hashrate'])
+    print('mining difficulty',content['data']['mining_difficulty'])
+    print ("Total Blocks:", content['data']['blocks'])
+    
