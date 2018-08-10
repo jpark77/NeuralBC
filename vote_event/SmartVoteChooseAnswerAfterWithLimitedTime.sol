@@ -1,4 +1,4 @@
- pragma solidity 0.4.24;
+pragma solidity 0.4.24;
 
 contract Ballot{
     struct Voter{
@@ -21,12 +21,13 @@ contract Ballot{
     uint answer;
     uint end;
     uint public start;
+    uint find_index;
     
+    bool initialized;
     bool winner_selected;
     bool share_sent;
     mapping(address=>Voter) Voter_list;
     mapping(uint=>Selection) public Selection_list;
-    
     
     
     function Ballot(address _token){
@@ -36,6 +37,7 @@ contract Ballot{
         token_amount=0;
         winner_selected=false;
         share_sent=false;
+        initialized=false;
     }
     
     //Making some functions that only the creators can access
@@ -43,19 +45,34 @@ contract Ballot{
         require(msg.sender == creator);
         _;
     }
+    
     //initializing values
     //choice->the amount of selection
     //setting the limited time for voting
     function initBallot(uint _choice,uint _limitedtime) onlyCreator{
+        require(!initialized);
         choice=_choice;
         token_amount=Token(token).balanceOf(address(this));
+        require(token_amount>0,"No token deposited");
+        initialized=true;
         start=now;
         end=now+_limitedtime;
         
     }
-    //after the limited time exceeds you cannot vote
-    function Voting(uint _vote_to){
+    
+    function VotingSystem(uint _vote_to){
         require(now<end);
+        chairperson=msg.sender;
+        require(Voter_list[chairperson].vote_to!=_vote_to);
+        if(!Voter_list[chairperson].voted)
+            Voting(_vote_to);
+        else
+            ChangeVoting(_vote_to);
+    }
+    
+    //after the limited time exceeds you cannot vote
+    function Voting(uint _vote_to) internal{
+        //require(now<end);
         require(_vote_to<=choice-1);  
         chairperson=msg.sender;
         require(!Voter_list[chairperson].voted);
@@ -67,11 +84,33 @@ contract Ballot{
         Selection_list[Voter_list[chairperson].vote_to].vote_count++;
     }
     
-    /*function CancelVoting(){
+    
+    //If the voter wants to change his mind
+    function ChangeVoting(uint _vote_to) internal{
+        //require(now<end); 
         chairperson=msg.sender;
-        Voter_list[chairperson].voted=false;
+        require(Voter_list[chairperson].voted);
+        for(i=0;i<Selection_list[Voter_list[chairperson].vote_to].vote_count-1;i++)
+        {
+            if(Selection_list[Voter_list[chairperson].vote_to].Voted_By[i]==chairperson)
+            {
+                find_index=i;
+                break;
+            }
+        }
+        require(find_index<Selection_list[Voter_list[chairperson].vote_to].vote_count);
+        for(i=find_index;i<Selection_list[Voter_list[chairperson].vote_to].vote_count-1;i++)
+            Selection_list[Voter_list[chairperson].vote_to].Voted_By[i]=Selection_list[Voter_list[chairperson].vote_to].Voted_By[i+1];
+        delete Selection_list[Voter_list[chairperson].vote_to].Voted_By[i];
         
-    }*/
+        Voter_list[chairperson].voted=false;
+        Selection_list[Voter_list[chairperson].vote_to].vote_count--;
+        Voter_list[chairperson].voted=true;
+        Voter_list[chairperson].vote_to=_vote_to;
+        uint temp=Selection_list[Voter_list[chairperson].vote_to].vote_count;
+        Selection_list[Voter_list[chairperson].vote_to].Voted_By[temp]=chairperson;
+        Selection_list[Voter_list[chairperson].vote_to].vote_count++;
+    }
     
     //_answer->selecting the answer for the question
     //checking the winner
@@ -85,8 +124,8 @@ contract Ballot{
     }
     
     
-    function Winner_Selection_Check() view returns(uint,uint,uint){
-        return (answer, Selection_list[answer].vote_count,shared_token);
+    function Winner_Selection_Check() view returns(uint,uint,uint,uint){
+        return (answer, Selection_list[answer].vote_count,token_amount,shared_token);
     }
     
     //Each voters who selected the answer gets the same amount of reward

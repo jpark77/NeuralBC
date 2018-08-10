@@ -1,0 +1,233 @@
+pragma solidity 0.4.24;
+
+
+library SafeMath {
+  function mul(uint a, uint b) internal returns (uint) {
+    uint c = a * b;
+    assert(a == 0 || c / a == b);
+    return c;
+  }
+
+  function div(uint a, uint b) internal returns (uint) {
+    uint c = a / b;
+    return c;
+  }
+
+  function sub(uint a, uint b) internal returns (uint) {
+    assert(b <= a);
+    return a - b;
+  }
+
+  function add(uint a, uint b) internal returns (uint) {
+    uint c = a + b;
+    assert(c >= a);
+    return c;
+  }
+
+  function max64(uint64 a, uint64 b) internal pure returns (uint64) {
+    return a >= b ? a : b;
+  }
+
+  function min64(uint64 a, uint64 b) internal pure returns (uint64) {
+    return a < b ? a : b;
+  }
+
+  function max256(uint256 a, uint256 b) internal pure returns (uint256) {
+    return a >= b ? a : b;
+  }
+
+  function min256(uint256 a, uint256 b) internal pure returns (uint256) {
+    return a < b ? a : b;
+  }
+
+  function assert(bool assertion) internal {
+    require(assertion);
+  }
+}
+
+contract ERC20Basic {
+  uint public totalSupply;
+  function balanceOf(address who) view returns (uint);
+  function transfer(address to, uint value);
+  event Transfer(address indexed from, address indexed to, uint value);
+}
+
+contract BasicToken is ERC20Basic {
+  using SafeMath for uint;
+
+  mapping(address => uint) balances;
+
+  modifier onlyPayloadSize(uint size) {
+     if(msg.data.length < size + 4) {
+       revert();
+     }
+     _;
+  }
+
+  function transfer(address _to, uint _value) onlyPayloadSize(2 * 32) public {
+    balances[msg.sender] = balances[msg.sender].sub(_value);
+    balances[_to] = balances[_to].add(_value);
+    emit Transfer(msg.sender, _to, _value);
+  }
+
+  function balanceOf(address _owner) view public returns (uint balance) {
+    return balances[_owner];
+  }
+
+}
+
+contract ERC20 is ERC20Basic {
+  function allowance(address owner, address spender) view returns (uint);
+  function transferFrom(address from, address to, uint value);
+  function approve(address spender, uint value);
+  event Approval(address indexed owner, address indexed spender, uint value);
+}
+
+contract StandardToken is BasicToken, ERC20 {
+
+  mapping (address => mapping (address => uint)) allowed;
+
+  function transferFrom(address _from, address _to, uint _value) onlyPayloadSize(3 * 32) public {
+    uint256 _allowance = allowed[_from][msg.sender];
+
+    balances[_to] = balances[_to].add(_value);
+    balances[_from] = balances[_from].sub(_value);
+    allowed[_from][msg.sender] = _allowance.sub(_value);
+    emit Transfer(_from, _to, _value);
+  }
+
+  function approve(address _spender, uint _value) public{
+
+    if ((_value != 0) && (allowed[msg.sender][_spender] != 0)) revert();
+
+    allowed[msg.sender][_spender] = _value;
+    emit Approval(msg.sender, _spender, _value);
+  }
+
+  function allowance(address _owner, address _spender) view public returns (uint remaining) {
+    return allowed[_owner][_spender];
+  }
+
+}
+
+contract Ownable {
+  address public owner;
+
+  constructor() public{
+    owner = msg.sender;
+  }
+
+  modifier onlyOwner() {
+    require(msg.sender == owner);
+    _;
+  }
+
+  function transferOwnership(address newOwner) onlyOwner public {
+    if (newOwner != address(0)) {
+      owner = newOwner;
+    }
+  }
+
+}
+
+contract MintableToken is StandardToken, Ownable {
+  event Mint(address indexed to, uint value);
+  event MintFinished();
+
+  bool public mintingFinished = false;
+  uint public totalSupply = 0;
+
+
+  modifier canMint() {
+    require(!mintingFinished);
+    _;
+  }
+
+  function mint(address _to, uint _amount) onlyOwner canMint public returns (bool) {
+    totalSupply = totalSupply.add(_amount);
+    balances[_to] = balances[_to].add(_amount);
+    emit Mint(_to, _amount);
+    return true;
+  }
+
+  function finishMinting() onlyOwner public returns (bool) {
+    mintingFinished = true;
+    emit MintFinished();
+    return true;
+  }
+}
+
+contract Pausable is Ownable {
+  event Pause();
+  event Unpause();
+
+  bool public paused = false;
+
+  modifier whenNotPaused() {
+    require(!paused);
+    _;
+  }
+
+  modifier whenPaused {
+    require(paused);
+    _;
+  }
+
+  function pause() onlyOwner whenNotPaused public returns (bool) {
+    paused = true;
+    emit Pause();
+    return true;
+  }
+
+  function unpause() onlyOwner whenPaused public returns (bool) {
+    paused = false;
+    emit Unpause();
+    return true;
+  }
+}
+
+contract BurnableToken is StandardToken {
+
+  event Burn(address indexed burner, uint256 value);
+
+  function burn(uint256 _value) public {
+    _burn(msg.sender, _value);
+  }
+
+  function burnFrom(address _from, uint256 _value) public {
+    require(_value <= allowed[_from][msg.sender]);
+    allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
+    _burn(_from, _value);
+  }
+
+  function _burn(address _who, uint256 _value) internal {
+    require(_value <= balances[_who]);
+    
+    balances[_who] = balances[_who].sub(_value);
+    totalSupply = totalSupply.sub(_value);
+    emit Burn(_who, _value);
+    emit Transfer(_who, address(0), _value);
+  }
+}
+
+contract PausableToken is StandardToken, Pausable {
+
+  function transfer(address _to, uint _value) whenNotPaused public {
+    super.transfer(_to, _value);
+  }
+
+  function transferFrom(address _from, address _to, uint _value) whenNotPaused public{
+    super.transferFrom(_from, _to, _value);
+  }
+}
+
+
+contract myToken is PausableToken, MintableToken, BurnableToken {
+  using SafeMath for uint256;
+
+  string public name = "myToken";
+  string public symbol = "MY";
+  uint public decimals = 18;
+
+
+}
