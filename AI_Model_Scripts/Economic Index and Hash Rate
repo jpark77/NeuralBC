@@ -25,16 +25,24 @@ print(gold_price)
 import  sys
 import json
 import  requests
+from pymongo import *
+from bson import *
 
 response = requests.get('https://chain.so/api/v2/get_info/BTC')
-
-
 
 if response.status_code == 200:
     # everything went swimmingly                                                                                                                   
     # parse the response as JSON
-    content = response.json()
+    content= response.json()
     print ("hashrate", content['data']['hashrate'])
     print('mining difficulty',content['data']['mining_difficulty'])
     print ("Total Blocks:", content['data']['blocks'])
+    
+    # Connetion MongoDB
+    client = MongoClient('52.79.241.214', 27017)
+    db = client['Coin']
+    collection = db['BTC_hashrate']
+
+    collection.insert_many(content)
+    
     
