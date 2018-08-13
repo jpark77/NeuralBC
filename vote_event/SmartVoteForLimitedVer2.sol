@@ -39,7 +39,7 @@ contract Ballot{
         require(msg.sender==creator);
         _;
     }
-    //Start Again 2018.08.09
+    
     function Voting(uint _vote_to){
         require(_vote_to<=choices);
         require(_vote_to!=0);
