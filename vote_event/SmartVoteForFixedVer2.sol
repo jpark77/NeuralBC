@@ -34,11 +34,11 @@ contract Ballot{
     
     modifier onlyCreator(){
         require(msg.sender==creator);
-        _;
+        _; 
     }
     
     function Voting(uint _vote_to){
-        require(_vote_to<=choices);
+        require(_vote_to<=choices); 
         require(_vote_to!=0);
         vote_to[msg.sender]=_vote_to;
         vote_number[_vote_to]++;
