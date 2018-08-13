@@ -80,9 +80,9 @@ contract StandardToken is ERC20 {
     require(_value <= allowed[_from][msg.sender]);
     require(_to != address(0));
 
+    allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
-    allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
     emit Transfer(_from, _to, _value);
     return true;
   }
@@ -111,10 +111,10 @@ contract ROMToken is StandardToken{
     string public name;
     string public symbol;
     uint256 public decimals;
-    address public owner;
+    address owner;
     
-    event Burn(address indexed burner, uint256 value);
-    event Mint(address indexed to, uint256 amount);
+    event Burn(uint256 amount);
+    event Mint(uint256 amount);
 
     modifier onlyOwner() {
         require(msg.sender == owner);
@@ -130,10 +130,10 @@ contract ROMToken is StandardToken{
         owner=msg.sender;
     }
     
-    function mint(address _to, uint256 _amount) onlyOwner public returns (bool) {
+    function mint(uint256 _amount) onlyOwner public returns (bool) {
         totalSupply_ = totalSupply_.add(_amount);
-        balances[_to] = balances[_to].add(_amount);
-        emit Mint(_to, _amount);
+        balances[owner] = balances[owner].add(_amount);
+        emit Mint(_amount);
         return true;
     }
     
@@ -141,7 +141,7 @@ contract ROMToken is StandardToken{
         require(0 < _value && _value <= balances[msg.sender]);
         balances[msg.sender] = balances[msg.sender].sub(_value);
         totalSupply_ = totalSupply_.sub(_value);
-        emit Burn(msg.sender, _value);
+        emit Burn(_value);
         return true;
     }
 }
