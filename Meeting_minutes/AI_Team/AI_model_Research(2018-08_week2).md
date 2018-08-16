@@ -20,6 +20,19 @@ Test Data 3
 
 Overfitting이 줄고 Prediction accuracy가 많이 좋아진 것을 알 수 있다.
 
+## From Regression to Classification  
+
+가격을 정확히 예측하는 모델과 함께, 가격의 변동추세(상승, 보합, 하락)를 예측하는 모델도 필요  
+두 가지 형태의 방식을 생각해볼 수 있다.  
+1. 가격을 예측하는 모델에서 예측 가격 P'(t+1)과 이전 실제 가격을 P(t) 비교해서 결론을 내는 방법 : Error = P'(t+1) - P(t+1)  
+2. 가격 변동의 추세를 정확히 맞추어 가는 방향으로 모델 생성    
+
+| Date  | Close | Movement | Volume | 
+| ---- | ----- | ----- | ------ | 
+| 2014-05-01 00:00:00 | 4325 | 2  | 3414143 | 
+| 2014-05-01 00:30:00 | 2132 | 0 | 3441244 | 
+
+
 
 ## AWS 
 SageMaker 인스턴스 생성 관련하여 아래와 같은 문제가 생겨서  
@@ -33,3 +46,8 @@ Response
 --> Request Again
 Region : "Asia/Seoul",   
 2개 Instances to launch (ml.p3.2.xlarge, ml.p3.8.xlarge.)
+
+Response  
+> I went ahead for you and requested the limit increase in Asia/Seoul region for your account [360516151325] and our internal sagemaker team approved this request for you and it will take effect shortly.  
+
+생성완료
