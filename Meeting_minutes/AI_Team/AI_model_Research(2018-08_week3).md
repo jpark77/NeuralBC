@@ -2,11 +2,11 @@
 
 작업 환경을 AWS로 옮기고 모델 구현 코드를 대폭 수정한 결과, 모델의 가격 예측 정확도 향상을 이룰 수 있었음.  
 
-### 20 LSTM units, 8 Epochs, Batch size = 30  
+### 20 LSTM units, 8 Epochs, Batch size = 30 (Test error = 0.000208)
 
 ![alt_text](./Images/LSTM_price_prediction.png)  
 
-### 50 LSTM units, 36 Epochs, Batch size = 30  
+### 50 LSTM units, 36 Epochs, Batch size = 30 (Test error = 0.000015)
 
 ![alt_text](./Images/LSTM_price_prediction_advanced.png)  
 
