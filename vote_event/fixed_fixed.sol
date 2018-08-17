@@ -124,9 +124,9 @@ contract FixedToken{
         uint temp_idx=reward_idx;
         for(i=reward_idx; i<idx && i<temp_idx+_number; i++)
         {
+            reward_idx=reward_idx.add(1);
             if(vote_to[voter[i]]==answer){
-                reward_idx=reward_idx.add(1);
-                //Contract(address).Deposit(voter[i], token, reward_amount);
+                //Contract(0x46616b7b1ff69bc68370ccc9d86ea319c33b8fc1).deposit(voter[i], token, reward_amount);
             }
         }
         if(reward_idx==idx){
