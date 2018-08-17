@@ -137,8 +137,9 @@ contract sharedToken{
         uint temp_idx=reward_idx;
         for(i=reward_idx; i<idx && i<temp_idx+_number; i++)
         {
+            reward_idx=reward_idx.add(1);
             if(vote_to[voter[i]]==answer){
-                reward_idx=reward_idx.add(1);
+                
                 //Contract(address).Deposit(voter[i], token, reward_amount);
             }
         }
