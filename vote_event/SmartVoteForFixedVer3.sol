@@ -4,7 +4,6 @@ contract FixedToken{
     mapping(address=>uint) vote_to;
     mapping(uint=>uint) vote_number;
     mapping(uint=>address) voter;
-    mapping(uint=>address) public vote_result;
     
     uint idx;
     uint i;
@@ -40,10 +39,9 @@ contract FixedToken{
     function Voting(uint _vote_to,address _voter_add){
         require(_vote_to<=choices); 
         require(_vote_to!=0);
-        vote_to[msg.sender]=_vote_to;
+        vote_to[_voter_add]=_vote_to;
         vote_number[_vote_to]++;
         voter[idx++]=_voter_add;
-        vote_result[_vote_to]=_voter_add;
     }
     
     function AnswerSelected(uint _answer) onlyCreator{
