@@ -38,8 +38,7 @@ contract FixedToken{
     mapping(address=>uint256) vote_to;
     mapping(uint256=>uint256) vote_number;
     mapping(uint256=>address) voter;
-    mapping(uint256=>address) public vote_result;
-    
+
     uint256 idx;
     uint256 i;
     uint256 public reward_amount; // fixed
@@ -77,7 +76,7 @@ contract FixedToken{
         _;
     }
     
-    constructor(address _token,uint _choices,uint _reward_amount){
+    constructor(address _token,uint _choices,uint _reward_amount) public {
         creator=msg.sender;
         token=_token;
         choices=_choices;
@@ -86,12 +85,12 @@ contract FixedToken{
         end=false;
     }
     
-    function Vote_Start() onlyCreator{
+    function Vote_Start() onlyCreator public{
         require(!start);
         start=true;
     }
 
-    function Voting(address _voter, uint _select) onGoing{
+    function Voting(address _voter, uint _select) onGoing public{
         require(_select<=choices); 
         require(_select!=0);
         vote_to[_voter]=_select;
@@ -99,7 +98,7 @@ contract FixedToken{
         voter[idx++]=_voter;
     }
     
-    function SelectAnswer(uint _answer) onlyCreator{
+    function SelectAnswer(uint _answer) onlyCreator public{
         require(!answer_selected);
         require(_answer<=choices && _answer!=0);
         answer=_answer;
@@ -108,24 +107,30 @@ contract FixedToken{
     }
     
     
-    function GiveReward() onlyCreator{
+    function GiveReward() onlyCreator public{
         require(!reward_given);
         for(i=0;i<idx;i++)
         {
             if(vote_to[voter[i]]==answer){
+                //Contract(address).Deposit(voter[i], token, reward_amount);
+
             }
         }
         reward_given=true;
     }
     
-    function GiveReward2(uint256 _number) onlyCreator{
-        for(i=temp_idx; i<idx; i++)
+    function GiveReward2(uint256 _number) onlyCreator public{
+        require(!reward_given);
+        for(i=temp_idx; i<idx && i<idx+_number; i++)
         {
             if(vote_to[voter[i]]==answer){
+                temp_idx=temp_idx.add(1);
                 //Contract(address).Deposit(voter[i], token, reward_amount);
             }
         }
-        temp_idx=temp_idx.add(_number);
+        if(temp_idx==idx){
+            reward_given=true;
+        }
     }
     
 }
