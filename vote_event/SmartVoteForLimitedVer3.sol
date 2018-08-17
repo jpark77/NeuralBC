@@ -1,5 +1,6 @@
 pragma solidity 0.4.24;
 
+
 contract SharedToken{
     mapping(address=>uint) vote_to;
     mapping(uint=>uint) vote_number;
@@ -16,6 +17,7 @@ contract SharedToken{
     
     address creator;
     address token;
+    address sending;
     
     bool initialized;
     bool selected;
@@ -44,7 +46,7 @@ contract SharedToken{
     function Voting(uint _vote_to,address _voter_add){
         require(_vote_to<=choices);
         require(_vote_to!=0);
-        vote_to[msg.sender]=_vote_to;
+        vote_to[_voter_add]=_vote_to;
         vote_number[_vote_to]++;
         voter[idx++]=_voter_add;
     }
@@ -57,7 +59,7 @@ contract SharedToken{
         shared_token=token_amount/vote_number[answer];
     }
     
-    function ShareToWinners() onlyCreator{
+    /*function ShareToWinners() onlyCreator{
         require(!share_sent);
         for(i=0;i<idx;i++)
         {
@@ -65,11 +67,23 @@ contract SharedToken{
             require(Token(token).transfer(voter[i],shared_token));
         }
         share_sent=true;
-    }
+    }*/
        
+    function UpdateInfo(address _sending) onlyCreator{
+        require(!share_sent);
+        sending=_sending;
+        for(i=0;i<idx;i++)
+        {
+            if(vote_to[voter[i]]==answer)
+            SendingToken(sending).Info_Optimize(voter[i],token,shared_token);
+        }
+    }
+}
+
+contract SendingToken{
+    function Info_Optimize(address _voter_address,address _token_address,uint _amount) public {}
 }
 
 contract Token {
   function transfer(address _to, uint256 _value) returns (bool success) {}
-
 }
