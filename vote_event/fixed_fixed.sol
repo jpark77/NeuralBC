@@ -45,7 +45,7 @@ contract FixedToken{
     uint256 public need_amount;
     uint256 choices;
     uint256 answer;
-    uint256 temp_idx;
+    uint256 reward_idx;
     
     address creator;
     address token;
@@ -121,14 +121,15 @@ contract FixedToken{
     
     function GiveReward2(uint256 _number) onlyCreator public{
         require(!reward_given);
-        for(i=temp_idx; i<idx && i<idx+_number; i++)
+        uint temp_idx=reward_idx;
+        for(i=reward_idx; i<idx && i<temp_idx+_number; i++)
         {
             if(vote_to[voter[i]]==answer){
-                temp_idx=temp_idx.add(1);
+                reward_idx=reward_idx.add(1);
                 //Contract(address).Deposit(voter[i], token, reward_amount);
             }
         }
-        if(temp_idx==idx){
+        if(reward_idx==idx){
             reward_given=true;
         }
     }
