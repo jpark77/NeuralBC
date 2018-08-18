@@ -10,7 +10,7 @@ import seaborn
 import numpy as np
 
 #  1 layer Wavelet decomposition
-x_data=x_data[:,0]                  # take the one factor(e.g Volumn, High, Hash rate) as an example
+x_data=x_data[:,0]                  # take one factor as an example (e.g Volumn, High, Hash rate) 
 x_data = x_data.reshape(-1,1)       # reshape to make it easy to be preprocessed
 x_scaler = MinMaxScaler()           # preprocessing the input data
 x_data = x_scaler.fit_transform(x_data)
