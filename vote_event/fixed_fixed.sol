@@ -38,7 +38,8 @@ contract FixedToken{
     mapping(address=>uint256) vote_to;
     mapping(uint256=>uint256) vote_number;
     mapping(uint256=>address) voter;
-
+    mapping(address=>bool) rewarded;
+    mapping(address=>bool) voter_voted;
     uint256 idx;
     uint256 i;
     uint256 public reward_amount; // fixed
@@ -46,6 +47,7 @@ contract FixedToken{
     uint256 choices;
     uint256 answer;
     uint256 reward_idx;
+    
     
     address creator;
     address token;
@@ -96,6 +98,7 @@ contract FixedToken{
         vote_to[_voter]=_select;
         vote_number[_select]++;
         voter[idx++]=_voter;
+        voter_voted[_voter]=true;
     }
     
     function SelectAnswer(uint _answer) onlyCreator public{
@@ -104,6 +107,12 @@ contract FixedToken{
         answer=_answer;
         answer_selected=true;
         need_amount=reward_amount*vote_number[answer];
+    }
+    
+    function GetReward(address _voter) onlyCreator public{
+        require(voter_voted[voter[i]]==true);
+         rewarded[_voter]=true;
+        //Contract(address).Deposit(_voter, token, reward_amount);
     }
     
     
@@ -119,20 +128,21 @@ contract FixedToken{
         reward_given=true;
     }
     
-    function GiveReward2(uint256 _number) onlyCreator public{
+     function GiveReward2(uint256 _number) onlyCreator public{
         require(!reward_given);
         uint temp_idx=reward_idx;
         for(i=reward_idx; i<idx && i<temp_idx+_number; i++)
         {
             reward_idx=reward_idx.add(1);
-            if(vote_to[voter[i]]==answer){
-                //Contract(0x46616b7b1ff69bc68370ccc9d86ea319c33b8fc1).deposit(voter[i], token, reward_amount);
+            rewarded[voter[i]]=true;
+            if(vote_to[voter[i]]==answer && voter_voted[voter[i]]){
+                
+                //Contract(address).Deposit(voter[i], token, reward_amount);
             }
         }
         if(reward_idx==idx){
             reward_given=true;
         }
-    }
+    }   
     
 }
-
