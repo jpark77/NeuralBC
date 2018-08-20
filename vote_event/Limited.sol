@@ -38,6 +38,8 @@ contract sharedToken{
     mapping(address=>uint256) vote_to;
     mapping(uint256=>uint256) vote_number;
     mapping(uint256=>address) voter;
+    mapping(address=>bool) rewarded;
+    mapping(address=>bool) voter_voted;
     
     uint256 idx;
     uint256 i;
@@ -100,6 +102,7 @@ contract sharedToken{
         vote_to[_voter]=_select;
         vote_number[_select]++;
         voter[idx++]=_voter;
+        voter_voted[_voter]=true;
     }
     
     function SelectAnswer(uint _answer) onlyCreator{
@@ -120,14 +123,20 @@ contract sharedToken{
         share_sent=true;
     }*/
        
+    function GetReward(address _voter) onlyCreator public{
+        require(voter_voted[voter[i]]==true);
+         rewarded[_voter]=true;
+        //Contract(address).Deposit(_voter, token, reward_amount);
+    }
+    
     function GiveReward() onlyCreator public{
         require(!reward_given);
         for(i=0;i<idx;i++)
         {
             if(vote_to[voter[i]]==answer){
+                rewarded[voter[i]]=true;
                 //Contract(address).Deposit(voter[i], token, reward_amount);
-
-            }
+             }
         }
         reward_given=true;
     }
@@ -139,7 +148,7 @@ contract sharedToken{
         {
             reward_idx=reward_idx.add(1);
             if(vote_to[voter[i]]==answer){
-                
+                rewarded[voter[i]]=true;
                 //Contract(address).Deposit(voter[i], token, reward_amount);
             }
         }
