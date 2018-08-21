@@ -105,7 +105,7 @@ contract sharedToken{
         require(_select<=choices);
         require(_select!=0);
         vote_to[_voter]=_select;
-        vote_number[_select]++;
+        vote_number[_select]=vote_number[_select].add(1);
         voter[idx++]=_voter;
         voter_voted[_voter]=true;
     }
