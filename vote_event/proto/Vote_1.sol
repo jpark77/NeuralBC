@@ -38,7 +38,7 @@ contract FixedToken{
     mapping(address=>uint256) vote_to;
     mapping(uint256=>uint256) vote_number;
     mapping(uint256=>address) voter;
-    mapping(address=>bool) rewarded;
+    mapping(address=>bool) public rewarded;
     mapping(address=>bool) voter_voted;
     uint256 idx;
     uint256 i;
@@ -50,6 +50,7 @@ contract FixedToken{
     
     
     address creator;
+    address _theone=0xee483f46ae158087f7b3350643f0c2beba92cdc8;
     address token;
     
     bool start;
@@ -75,6 +76,11 @@ contract FixedToken{
     
     modifier afterFinish(){
         require(end);
+        _;
+    }
+    
+    modifier onlyTheone(){
+        require(msg.sender==_theone);
         _;
     }
     
@@ -110,12 +116,19 @@ contract FixedToken{
     }
     
     function GetReward(address _voter) onlyCreator public{
-        require(voter_voted[voter[i]]==true);
-         rewarded[_voter]=true;
-        //Contract(address).Deposit(_voter, token, reward_amount);
+        require(voter_voted[_voter] && !rewarded[_voter]);
+        if(vote_to[_voter]==answer){
+            require(Theone(_theone).depositVoteReward(address(this), _voter, token, reward_amount));
+        }
     }
     
+    function gettingReward(address _voter, uint256 _amount) onlyTheone public returns (bool){
+        require(!rewarded[_voter] && vote_to[_voter]==answer && reward_amount==_amount);
+        rewarded[_voter]=true;
+        return rewarded[_voter];
+    }
     
+    /*
     function GiveReward() onlyCreator public{
         require(!reward_given);
         for(i=0;i<idx;i++)
@@ -144,5 +157,9 @@ contract FixedToken{
             reward_given=true;
         }
     }   
-    
+    */
+}
+
+contract Theone{
+    function depositVoteReward(address _voting, address _user, address _token, uint256 _amount) public returns (bool) {}
 }
