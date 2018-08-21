@@ -1,7 +1,7 @@
 # Top 9 거래소의 가격 정보 분포  
 ![alt_text](./Images/Top9_01.png) 
 ![alt_text](./Images/Top9_02.png) 
-상위 5개 거래소의 가격은 편차가 크지는 않아 보인다.  
+상위 9개 거래소의 가격은 편차가 크지는 않아 보인다.  
 
 ![alt_text](./Images/CMCvsTop9.png)  
 
