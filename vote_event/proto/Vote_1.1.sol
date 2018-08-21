@@ -51,6 +51,7 @@ contract FixedToken{
     
     address creator;
     address _theone=0xee483f46ae158087f7b3350643f0c2beba92cdc8;
+    address _rank=0xee483f46ae158087f7b3350643f0c2beba92cdc8;
     address token;
     
     bool start;
@@ -58,6 +59,7 @@ contract FixedToken{
     
     bool answer_selected;
     bool reward_given;
+    bool finish;
     
     modifier onlyCreator(){
         require(msg.sender==creator);
@@ -119,6 +121,7 @@ contract FixedToken{
         require(voter_voted[_voter] && !rewarded[_voter]);
         if(vote_to[_voter]==answer){
             require(Theone(_theone).depositVoteReward(address(this), _voter, token, reward_amount));
+            require(Rank(_rank).scorePlus(_user));
         }
     }
     
@@ -128,38 +131,50 @@ contract FixedToken{
         return rewarded[_voter];
     }
     
-    /*
+    
     function GiveReward() onlyCreator public{
         require(!reward_given);
         for(i=0;i<idx;i++)
         {
             if(vote_to[voter[i]]==answer){
                 //Contract(address).Deposit(voter[i], token, reward_amount);
-
+                require(Rank(_rank).scorePlus(voter[i]));
             }
         }
         reward_given=true;
     }
     
-     function GiveReward2(uint256 _number) onlyCreator public{
-        require(!reward_given);
+     function GiveReward2(uint256 _number) onlyCreator public returns (string){
+        if(reward_given){
+            if(finish){
+                return 'done';
+            } else {
+                
+            }
+        }
         uint temp_idx=reward_idx;
         for(i=reward_idx; i<idx && i<temp_idx+_number; i++)
         {
             reward_idx=reward_idx.add(1);
             rewarded[voter[i]]=true;
             if(vote_to[voter[i]]==answer && voter_voted[voter[i]]){
-                
-                //Contract(address).Deposit(voter[i], token, reward_amount);
+                require(Theone(_theone).depositVoteReward(address(this), voter[i], token, reward_amount));
+                require(Rank(_rank).scorePlus(voter[i]));
             }
         }
         if(reward_idx==idx){
             reward_given=true;
+            return 'done';
         }
+        return 'continue';
     }   
-    */
+    
 }
 
 contract Theone{
     function depositVoteReward(address _voting, address _user, address _token, uint256 _amount) public returns (bool) {}
+}
+
+contract Rank{
+    function scorePlus(address _user) returns (bool){}
 }
