@@ -44,6 +44,9 @@ contract Theone{
     mapping(address => mapping(address => bool) ) givenReward;
     
     mapping(address => mapping(address => bool) ) registeredToken;
+    mapping(address => bool) allToken;
+    
+    address[] public allTokenList;
     
     modifier onlyOwner(){
         require(msg.sender==owner);
@@ -70,25 +73,40 @@ contract Theone{
         require(Voting(_voting).gettingReward(_user, _amount));
         token_amounts[_user][_token] = token_amounts[_user][_token].add(_amount);
         
-        plusToken(_user, _token);
+        plusUserToken(_user, _token);
         return true;
     }
     
-    function withdraw(address _user, address _token, uint256 _amount) public returns (bool){
+    
+    function withdrawVoteReward(address _user, address _token, uint256 _amount) public returns (bool){
         token_amounts[_user][_token] = token_amounts[_user][_token].sub(_amount);
         return true;
     }
     
-    function plusToken(address _user, address _token) public {
+    function plusToken(address _token) public {
+        if(!allToken[_token]){
+            allTokenList.push(_token);
+        }
+        allToken[_token]=true;
+    }
+
+    //return All token list
+    function getTokenlist() view returns (address[]){
+        return allTokenList;
+    }
+
+    function plusUserToken(address _user, address _token) public {
         if(!registeredToken[_user][_token]){
             token_list[_user].push(_token);
         }
         registeredToken[_user][_token]=true;
     }
     
-    function getTokenlist(address _user) view returns (address[]){
+    //return User's token list
+    function getUserTokenlist(address _user) view returns (address[]){
         return token_list[_user];
     }
+    
 
 }
 
@@ -96,5 +114,4 @@ contract Voting{
     mapping(address=>bool) public rewarded;
     function gettingReward(address _voter, uint256 _amount) public returns (bool) {}
 }
-
 
