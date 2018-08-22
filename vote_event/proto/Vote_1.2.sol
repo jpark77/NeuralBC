@@ -40,18 +40,18 @@ contract FixedToken{
     mapping(uint256=>address) voter;
     mapping(address=>bool) public rewarded;
     mapping(address=>bool) voter_voted;
-    uint256 idx;
+    uint256 public idx;
     uint256 i;
     uint256 public reward_amount; // fixed
     uint256 public need_amount;
     uint256 choices;
     uint256 answer;
     uint256 reward_idx;
-    
+    uint256 limit_voters;
     
     address creator;
-    address _theone=0xcb7cbcf6837c6afb751f968e1235f8f720a426af;
-    address _rank=0x9fae8f7bf652176fda6319d4a28c9faaec4895a9;
+    address _theone=0xa55a5892541a67f07f1e4c08035e8ec2c6556656;
+    address _rank=0x3e2a3f10c5685c280e06a21d7e12fb6c63f1afcb;
     address token;
     
     bool start;
@@ -85,11 +85,17 @@ contract FixedToken{
         _;
     }
     
-    constructor(address _token,uint _choices,uint _reward_amount) public {
+    modifier limit(){
+        require(idx<limit_voters);
+        _;
+    }
+    
+    constructor(address _token,uint _choices,uint _reward_amount,uint _limit_voters) public {
         creator=msg.sender;
         token=_token;
         choices=_choices;
         reward_amount=_reward_amount;
+        limit_voters=_limit_voters;
         start=false;
         end=false;
     }
@@ -99,7 +105,7 @@ contract FixedToken{
         start=true;
     }
 
-    function Voting(address _voter, uint _select) onGoing public{
+    function Voting(address _voter, uint _select) onGoing limit public{
         require(_select<=choices); 
         require(_select!=0);
         vote_to[_voter]=_select;
