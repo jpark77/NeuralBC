@@ -50,8 +50,8 @@ contract FixedToken{
     
     
     address creator;
-    address _theone=0xee483f46ae158087f7b3350643f0c2beba92cdc8;
-    address _rank=0xee483f46ae158087f7b3350643f0c2beba92cdc8;
+    address _theone=0xcb7cbcf6837c6afb751f968e1235f8f720a426af;
+    address _rank=0x9fae8f7bf652176fda6319d4a28c9faaec4895a9;
     address token;
     
     bool start;
@@ -59,8 +59,7 @@ contract FixedToken{
     
     bool answer_selected;
     bool reward_given;
-    bool finish;
-    
+
     modifier onlyCreator(){
         require(msg.sender==creator);
         _; 
@@ -117,13 +116,15 @@ contract FixedToken{
         need_amount=reward_amount*vote_number[answer];
     }
     
+    /*
     function GetReward(address _voter) onlyCreator public{
         require(voter_voted[_voter] && !rewarded[_voter]);
         if(vote_to[_voter]==answer){
             require(Theone(_theone).depositVoteReward(address(this), _voter, token, reward_amount));
-            require(Rank(_rank).scorePlus(_user));
+            require(Rank(_rank).plusScore(_voter));
         }
     }
+    */
     
     function gettingReward(address _voter, uint256 _amount) onlyTheone public returns (bool){
         require(!rewarded[_voter] && vote_to[_voter]==answer && reward_amount==_amount);
@@ -131,35 +132,32 @@ contract FixedToken{
         return rewarded[_voter];
     }
     
-    
+    /*
     function GiveReward() onlyCreator public{
         require(!reward_given);
         for(i=0;i<idx;i++)
         {
             if(vote_to[voter[i]]==answer){
                 //Contract(address).Deposit(voter[i], token, reward_amount);
-                require(Rank(_rank).scorePlus(voter[i]));
+                require(Rank(_rank).plusScore(voter[i]));
             }
         }
         reward_given=true;
     }
+    */
     
      function GiveReward2(uint256 _number) onlyCreator public returns (string){
         if(reward_given){
-            if(finish){
-                return 'done';
-            } else {
-                
-            }
+            return 'done';
         }
-        uint temp_idx=reward_idx;
+        
+        uint256 temp_idx=reward_idx;
         for(i=reward_idx; i<idx && i<temp_idx+_number; i++)
         {
             reward_idx=reward_idx.add(1);
-            rewarded[voter[i]]=true;
             if(vote_to[voter[i]]==answer && voter_voted[voter[i]]){
                 require(Theone(_theone).depositVoteReward(address(this), voter[i], token, reward_amount));
-                require(Rank(_rank).scorePlus(voter[i]));
+                require(Rank(_rank).plusScore(voter[i]));
             }
         }
         if(reward_idx==idx){
@@ -176,5 +174,5 @@ contract Theone{
 }
 
 contract Rank{
-    function scorePlus(address _user) returns (bool){}
+    function plusScore(address _user) public returns (bool){}
 }
