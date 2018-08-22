@@ -33,31 +33,37 @@ library SafeMath {
 
 contract Rank{
     using SafeMath for uint256;    
-    mapping(uint256 => address) ranking; // ranking_idx => ranker
-    mapping(address => uint256) ranker; // ranker => ranking_idx
+    
+    address owner;
+    
+    mapping(uint256 => address) public ranking; // ranking_idx => ranker
+    mapping(address => uint256) public ranker; // ranker => ranking_idx
     mapping(uint256 => uint256) accum_count; //amount of upper rankers
     mapping(uint256 => uint256) count;
     
-    mapping(address => uint256) score; // score of User
+    mapping(address => uint256) public score; // score of User
 
+    
     
     //mapping(address => bool) isNew;
     
-    constructor(){
-        
+    constructor() public {
+        owner=msg.sender;
     }
 
     
-    function scorePlus(address _user) returns (bool) {
+    function plusScore(address _user) public returns (bool) {
         uint256 nextScore;
         uint256 originScore;
         
         originScore=score[_user];
-        count[originScore]=count[originScore].sub(1);
         
+        if(count[originScore]!=0){
+            count[originScore]=count[originScore].sub(1);
+        }
         nextScore=originScore.add(1);
         score[_user]=nextScore; // plus one to score
-        accum_count[nextScore]=accum_count[nextScore].add(1);
+        accum_count[originScore]=accum_count[originScore].add(1);
         
         //change ranking_idx if there are people at the same rank group
         if(count[originScore]!=0){
@@ -69,7 +75,7 @@ contract Rank{
         return true;
     }
     
-    function changeIndex(uint256 idx_A, uint256 idx_B){
+    function changeIndex(uint256 idx_A, uint256 idx_B) internal {
         address temp = ranking[idx_A]; // ranker addr
         ranking[idx_A] = ranking[idx_B];
         ranking[idx_B] = temp;
@@ -77,6 +83,8 @@ contract Rank{
         ranker[ranking[idx_A]] = idx_A;
         ranker[ranking[idx_B]] = idx_B;
     }
+    
+    //function minusScore
     
 }
 
