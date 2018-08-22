@@ -36,6 +36,8 @@ contract Rank{
     
     address owner;
     
+    uint256 public total_user;
+    
     mapping(uint256 => address) public ranking; // ranking_idx => ranker
     mapping(address => uint256) public ranker; // ranker => ranking_idx
     mapping(uint256 => uint256) accum_count; //amount of upper rankers
@@ -43,10 +45,6 @@ contract Rank{
     
     mapping(address => uint256) public score; // score of User
 
-    
-    
-    //mapping(address => bool) isNew;
-    
     constructor() public {
         owner=msg.sender;
     }
@@ -58,6 +56,11 @@ contract Rank{
         
         originScore=score[_user];
         
+        if(originScore==0){
+            total_user=total_user.add(1);
+            ranker[_user]=total_user;
+            ranking[total_user]=_user;
+        }
         if(count[originScore]!=0){
             count[originScore]=count[originScore].sub(1);
         }
