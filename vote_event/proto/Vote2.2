@@ -154,7 +154,7 @@ contract sharedToken{
             reward_idx=reward_idx.add(1);
             if(vote_to[voter[i]]==answer && voter_voted[voter[i]]){
             require(Theone(_theone).depositVoteReward(address(this), voter[i], token, shared_token));
-            require(Rank(_rank).scorePlus(voter[i]));
+            require(Rank(_rank).plusScore(voter[i]));
                 }    
             
         }
@@ -172,5 +172,5 @@ contract Theone{
 }
 
 contract Rank{
-    function scorePlus(address _user) returns (bool){}
+    function plusScore(address _user) returns (bool){}
 }
