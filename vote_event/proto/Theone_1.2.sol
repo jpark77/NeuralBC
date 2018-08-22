@@ -62,7 +62,7 @@ contract Theone{
         owner = msg.sender;
     }
     
-    function validateVote(address _voting) onlyOwner{
+    function validateVote(address _voting) public onlyOwner{
         valid_vote[_voting]=true;
     }
     
@@ -91,7 +91,7 @@ contract Theone{
     }
 
     //return All token list
-    function getTokenlist() view returns (address[]){
+    function getTokenlist() public view returns (address[]){
         return allTokenList;
     }
 
@@ -103,7 +103,7 @@ contract Theone{
     }
     
     //return User's token list
-    function getUserTokenlist(address _user) view returns (address[]){
+    function getUserTokenlist(address _user) public view returns (address[]){
         return token_list[_user];
     }
     
