@@ -1,0 +1,107 @@
+pragma solidity ^0.4.24;
+
+library SafeMath {
+
+  function mul(uint256 _a, uint256 _b) internal pure returns (uint256) {
+      if (_a == 0) {
+          return 0;
+        }
+      uint256 c = _a * _b;
+      assert(c / _a == _b);
+      return c;
+      
+  }
+
+  function div(uint256 _a, uint256 _b) internal pure returns (uint256) {
+      require(_b > 0);
+      uint256 c = _a / _b;
+      return c;
+  }
+
+  function sub(uint256 _a, uint256 _b) internal pure returns (uint256) {
+      assert(_b <= _a);
+      uint256 c = _a - _b;
+      return c;
+  }
+
+  function add(uint256 _a, uint256 _b) internal pure returns (uint256) {
+      uint256 c = _a + _b;
+      assert(c >= _a);
+      return c;
+  }
+}
+
+contract Rank{
+    using SafeMath for uint256;    
+    
+    address owner;
+    
+    uint256 public total_user;
+    mapping(uint256 => address) public ranker; 
+    mapping(address => uint256) public ranking;
+    mapping(address => uint256) public score; // score of User
+    mapping(uint256 => uint256) accum_count; //amount of upper rankers
+    mapping(uint256 => uint256) count;
+
+    mapping(uint256 => mapping(uint256 => uint256)) monthly_total_user;
+    mapping(uint256 => mapping(uint256 => mapping(uint256 => address))) monthlyRanking;
+    mapping(uint256 => mapping(uint256 => mapping(address => uint256))) monthlyRanker;
+    mapping(uint256 => mapping(uint256 => mapping(address => uint256))) public monthlyScore;
+    mapping(uint256 => mapping(uint256 => mapping(uint256 => uint256))) monthly_accum_count;
+    mapping(uint256 => mapping(uint256 => mapping(uint256 => uint256))) monthly_count;
+
+    uint256[] awardDate;
+    address[] awardAddress;
+
+    constructor() public {
+        owner=msg.sender;
+    }
+    
+    function updateInfo(address _user, uint _point, uint256 _date){
+        plusTotalScore(_user, _point);
+        plusAwardList(_date, msg.sender);
+        //plusMonthScore
+        //plusWeekScore
+        //plusDailyScore
+    }
+    
+    function plusTotalScore(address _user, uint256 _point){
+        uint256 i;
+        
+        if(score[_user]==0){
+            newUser(_user);
+        }
+        
+        //update score
+        score[_user]=score[_user].add(_point);
+        
+        //update ranking, ranker
+        for(i=ranking[_user].sub(1);i>0;i=i.sub(1)){
+            if(score[ranker[i]]>=score[_user]){
+                ranking[_user]=i.add(1);
+                ranker[i.add(1)]=_user;
+                break;
+            }
+            ranking[ranker[i]] = ranking[ranker[i]].add(1);
+            ranker[i.add(1)] = ranker[i];
+        }
+        if(i==0){
+            ranking[_user]=i.add(1);
+            ranker[i.add(1)]=_user;
+        }
+        
+    }
+
+    function newUser(address _user){
+        total_user=total_user.add(1);
+        ranking[_user]=total_user;
+        ranker[total_user]=_user;
+    }
+    
+    function plusAwardList(uint256 _date, address _voteContract){
+        awardDate.push(_date);
+        awardAddress.push(_voteContract);
+        require(awardDate.length==awardAddress.length);
+    }
+    
+}
