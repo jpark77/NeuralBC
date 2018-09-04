@@ -81,11 +81,11 @@ Changing to the Classification problem
 3. Architecture function: changing the loss function 
 
 
-    def Architecture(self, modelDescript, modelName="Model_02"):
+       def Architecture(self, modelDescript, modelName="Model_02"):
         sess = tf.Session()
 
         ### Model ###
-        num_step = 10000
+        num_step = 5000
         X = tf.placeholder(tf.float32, [self.dm.batch_size, self.dm.window_length, self.dm.data_dim])
         Y = tf.placeholder(tf.float32, [self.dm.batch_size, self.dm.output_dim])
 
@@ -95,28 +95,29 @@ Changing to the Classification problem
         Y_pred = tf.contrib.layers.fully_connected(outputs[:,-1], self.dm.output_dim,
                                                    activation_fn=None)  # We only interest the last output value
 
-        loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(labels=Y,logits=Y_pred))
+        loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=Y_pred,labels=Y))
         # loss = tf.reduce_mean(tf.square(Y_pred - Y))
 
         # calculate accuracy
-        correct_prediction = tf.equal(tf.argmax(Y_pred, 1), tf.argmax(Y, 1))
-        accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
+        correct_prediction = tf.equal(tf.argmax(Y_pred, 1), tf.argmax(Y, 1))   # bool vector consisting of true of false
+        accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))        # changing the bool into real number, then calculating the mean value, which this the accuracy of this batch.
         optimizer = tf.train.AdamOptimizer(self.dm.learning_rate)
         train = optimizer.minimize(loss)
         tf.glorot_uniform_initializer()
-
-
-
         print("%s graph complete" % (modelName))
 
         ### Session ###
         sess = tf.Session()
         sess.run(tf.global_variables_initializer())
+
+        validate_feed={X: self.dm.x_val, Y: self.dm.y_val}
         for i in range(num_step):
             _, l, accuracy_print = sess.run([train, loss,accuracy], feed_dict={X: self.dm.x_train, Y: self.dm.y_train})
+            validate_acc=sess.run(accuracy,feed_dict=validate_feed)
             if (i % 500 == 1):
 
-                print("Step %d  :  Loss %.9f, accuracy % 9f" % (i, l,accuracy_print))
+                print("Step %d  :  Loss %.9f, accuracy for recent batch % 9f" % (i, l,accuracy_print))
+                print("After %d training step(s), validation accuracy" "using average model is %g" %(i,validate_acc))
 
         print("Training Done!")
 
