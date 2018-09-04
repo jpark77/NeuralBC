@@ -1,0 +1,147 @@
+Changing to the Classification problem
+
+1. Data process function needs to be changed
+
+
+    def data_preprocess(self):
+        timesteps = 4
+        print("----------------------- Data preprocess -------------------------")
+        self.x = self.x.ix[:-timesteps, :]
+        movement = self.y['close']
+        length_change=len(movement.tolist())
+        movement_collection=[]
+
+       # output movement
+        for i in list(range(length_change-4)):
+            movement[i]=(movement[i+4]/movement[i])-1
+            if movement[i] > 0.003:
+                movement_collection.append ([1,0,0])
+            elif movement[i] < -0.003:
+                movement_collection.append([0, 0, 1])
+            else:
+                movement_collection.append([0, 1, 0])
+        movement_collection=pd.DataFrame(movement_collection)
+        print(movement_collection)
+
+        self.y = self.y.ix[:-timesteps, :]
+        xx = self.scalerX.fit_transform(self.x.values)
+        yy=movement_collection.values
+        final_x = self.scalerX.fit_transform(self.latest_x.values)
+        arrayListX = []
+        arrayListY = []
+        for i in range(0, len(self.x) - self.window_length, self.window_length):
+            _x = xx[i:i + self.window_length]
+            _y = yy[i + self.window_length]  # Next close price
+            arrayListX.append(_x)
+            arrayListY.append(_y)
+
+        # train/test split
+        train_size = int(len(arrayListX) * self.percent_train)
+        test_size = len(arrayListX) - train_size
+        self.x_train, self.x_val = np.array(arrayListX[0:train_size]), np.array(arrayListX[train_size:len(self.x)])
+        self.y_train, self.y_val = np.array(arrayListY[0:train_size]), np.array(arrayListY[train_size:len(self.y)])
+        self.x_test = np.array([final_x])
+        print("X train dimension : ", self.x_train.shape)
+        print("X validation dimension : ", self.x_val.shape)
+        print("y train dimension : ", self.y_train.shape)
+        print("y validation dimension : ", self.y_val.shape)
+        print("X test dimension : ", self.x_test.shape)
+        Earlist = self.Datetime_to_Str(self.x.index[-self.window_length])
+        Latest = self.Datetime_to_Str(self.x.index[-1])  # The last time of input data
+        self.PredictTime = self.Datetime_to_Str(self.y.index[-1])  # 2 hrs later from the latest time
+        # print("To forecast price at %s, data from %s to %s will be validated" %(self.PredictTime, Earlist, Latest))
+ 
+ 
+ 2. Data Manager: changing the output_dim to 3
+ 
+ 
+ class Data_manager(object):
+
+    def __init__(self, DF):
+        np.random.seed(1)
+        DF = DF.dropna()
+        DF = DF.drop_duplicates()
+
+        self.x = DF
+        self.y = DF
+
+        self.scalerX = MinMaxScaler(feature_range=(-1, 1))
+        self.scalerY = MinMaxScaler(feature_range=(-1, 1))
+        self.data_dim = self.x.shape[-1]
+        self.output_dim = 3
+        self.batch_size = None
+        self.window_length = 20
+        self.percent_train = 0.6
+        self.hidden_dim = 50
+        self.learning_rate = 0.01
+
+        self.latest_x = DF[-40:-self.window_length]
+        
+
+3. Architecture function: changing the loss function 
+
+
+    def Architecture(self, modelDescript, modelName="Model_02"):
+        sess = tf.Session()
+
+        ### Model ###
+        num_step = 10000
+        X = tf.placeholder(tf.float32, [self.dm.batch_size, self.dm.window_length, self.dm.data_dim])
+        Y = tf.placeholder(tf.float32, [self.dm.batch_size, self.dm.output_dim])
+
+        Cell = self.RNN_cell()
+        outputs, _states = tf.nn.dynamic_rnn(Cell, X, dtype=tf.float32)
+
+        Y_pred = tf.contrib.layers.fully_connected(outputs[:,-1], self.dm.output_dim,
+                                                   activation_fn=None)  # We only interest the last output value
+
+        loss = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(labels=Y, logits=Y_pred))
+        # loss = tf.reduce_mean(tf.square(Y_pred - Y))
+
+        # calculate accuracy
+        correct_prediction = tf.equal(tf.argmax(Y_pred, 1), tf.argmax(Y, 1))
+        accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
+        optimizer = tf.train.AdamOptimizer(self.dm.learning_rate)
+        train = optimizer.minimize(loss)
+        tf.glorot_uniform_initializer()
+
+
+
+        print("%s graph complete" % (modelName))
+
+        ### Session ###
+        sess = tf.Session()
+        sess.run(tf.global_variables_initializer())
+        for i in range(num_step):
+            _, l, accuracy_print = sess.run([train, loss,accuracy], feed_dict={X: self.dm.x_train, Y: self.dm.y_train})
+            if (i % 500 == 1):
+
+                print("Step %d  :  Loss %.9f, accuracy % 9f" % (i, l,accuracy_print))
+
+        print("Training Done!")
+
+
+        y_pred = sess.run(Y_pred, feed_dict={X: self.dm.x_val})
+        print("y_pred is %s", y_pred)
+        print(sess.run(tf.nn.softmax(y_pred)))
+        print("y_ture is %s",self.dm.y_val)
+
+ 
+ 
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
