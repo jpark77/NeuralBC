@@ -95,7 +95,7 @@ Changing to the Classification problem
         Y_pred = tf.contrib.layers.fully_connected(outputs[:,-1], self.dm.output_dim,
                                                    activation_fn=None)  # We only interest the last output value
 
-        loss = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(labels=Y, logits=Y_pred))
+        loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(labels=Y,logits=Y_pred))
         # loss = tf.reduce_mean(tf.square(Y_pred - Y))
 
         # calculate accuracy
