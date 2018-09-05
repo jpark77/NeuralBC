@@ -104,8 +104,7 @@ class Data_manager(object):
 
 3. Architecture function: changing the loss function 
 
-
-          def Architecture(self, modelDescript, modelName="Model_02"):
+def Architecture(self, modelDescript, modelName="Model_02"):
         sess = tf.Session()
 
         ### Model ###
@@ -129,7 +128,7 @@ class Data_manager(object):
 
 
         # calculate accuracy
-        correct_prediction = tf.equal(tf.argmax(Y_pred, 1), tf.argmax(Y, 1))   # bool vector consisting of true of false
+        correct_prediction = tf.equal(tf.argmax(Y_pred, 1), tf.argmax(Y, 1))   # bool vector consisting of true or false
         accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))        # changing the bool into real number, then calculating the mean value, which this the accuracy of this batch.
 
         optimizer = tf.train.AdamOptimizer(self.dm.learning_rate)
