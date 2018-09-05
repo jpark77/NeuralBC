@@ -1,8 +1,8 @@
 hyperparameter adjustment:
 1. droup out  2. regularization 3. learning rate--exponential_decay  4. hiddern layer's perceptron number: window_length=10, hidden_dim = 10
 The conclusion: 
-After 10760 steps, the accuracy of validation data reaches to : 0.537
-After 20000 steps, the accuracy of validation data reaches to : 0.49
+After 10760 steps, the prediction accuracy of validation datasets reaches to : 0.537
+After 20000 steps, the prediction accuracy of validation datasets reaches to : 0.49
 It's found that there is a tendency that as window length extends, the accuracy fluctuates more fiercely. 
 
 
