@@ -1,4 +1,7 @@
 Changing to the Classification problem
+The accuracy for validation data is about 0.37. There is severe over fitting problem in the recent neural network. (learning rate=0.01, step_num=8000)
+To fix this problem, there are three methods intended to put into use: 1. regularization. 2. learning rate exponential deay method. 3. drop out. 
+
 
 1. Data process function needs to be changed
 
@@ -52,10 +55,10 @@ Changing to the Classification problem
         # print("To forecast price at %s, data from %s to %s will be validated" %(self.PredictTime, Earlist, Latest))
  
  
- 2. Data Manager: changing the output_dim to 3
+ 2. Data Manager: changing the output_dim to 3, learning rate is set as 0.01
  
  
- class Data_manager(object):
+class Data_manager(object):
 
     def __init__(self, DF):
         np.random.seed(1)
@@ -76,46 +79,80 @@ Changing to the Classification problem
         self.learning_rate = 0.01
 
         self.latest_x = DF[-40:-self.window_length]
+
+        # learning rate decay
+        #learning_rate_decay = 0.99
+        #global_step = tf.Variable(0, trainable=False)
+        #learning_rate = tf.train.exponential_decay(learning_rate, global_step )
+
+    def Datetime_to_Str(self, DATE):
+        return DATE.strftime("%Y-%m-%d %H:%M:%S")
+
+    def get_label(self, numerator, denominator):
+        fraction = (numerator - denominator) / denominator
+        if fraction > 0.003:
+            answer = "Rise"
+
+        elif fraction < -0.003:
+            answer = "Fall"
+
+        else:
+            answer = "Steady"
+
+        return answer
         
 
 3. Architecture function: changing the loss function 
 
 
-       def Architecture(self, modelDescript, modelName="Model_02"):
+          def Architecture(self, modelDescript, modelName="Model_02"):
         sess = tf.Session()
 
         ### Model ###
-        num_step = 5000
+        num_step = 8000
         X = tf.placeholder(tf.float32, [self.dm.batch_size, self.dm.window_length, self.dm.data_dim])
         Y = tf.placeholder(tf.float32, [self.dm.batch_size, self.dm.output_dim])
 
         Cell = self.RNN_cell()
         outputs, _states = tf.nn.dynamic_rnn(Cell, X, dtype=tf.float32)
 
-        Y_pred = tf.contrib.layers.fully_connected(outputs[:,-1], self.dm.output_dim,
-                                                   activation_fn=None)  # We only interest the last output value
+        Y_pred = tf.contrib.layers.fully_connected(outputs[:,-1], self.dm.output_dim, activation_fn=None)  # We only interest the last output value
 
         loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=Y_pred,labels=Y))
         # loss = tf.reduce_mean(tf.square(Y_pred - Y))
 
+        # To fix the over fitting problem, introduce the L2 regularization to the loss function
+        #regularization_rate=0.0001
+        #regularizer=tf.contrib.layers.l2_regularizer(regularization_rate)
+        #regularization=regularizer(weights1)+regularizer(weighits2)   ### How to find?
+        #loss=loss+regularization
+
+
         # calculate accuracy
         correct_prediction = tf.equal(tf.argmax(Y_pred, 1), tf.argmax(Y, 1))   # bool vector consisting of true of false
         accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))        # changing the bool into real number, then calculating the mean value, which this the accuracy of this batch.
+
         optimizer = tf.train.AdamOptimizer(self.dm.learning_rate)
         train = optimizer.minimize(loss)
         tf.glorot_uniform_initializer()
         print("%s graph complete" % (modelName))
 
+
+
         ### Session ###
         sess = tf.Session()
         sess.run(tf.global_variables_initializer())
-
         validate_feed={X: self.dm.x_val, Y: self.dm.y_val}
+        accuracy_train=[]
+        accuracy_val=[]
+        step=[]
         for i in range(num_step):
             _, l, accuracy_print = sess.run([train, loss,accuracy], feed_dict={X: self.dm.x_train, Y: self.dm.y_train})
             validate_acc=sess.run(accuracy,feed_dict=validate_feed)
             if (i % 500 == 1):
-
+                step.append(i)
+                accuracy_train.append(accuracy_print)
+                accuracy_val.append(validate_acc)
                 print("Step %d  :  Loss %.9f, accuracy for recent batch % 9f" % (i, l,accuracy_print))
                 print("After %d training step(s), validation accuracy" "using average model is %g" %(i,validate_acc))
 
@@ -126,6 +163,11 @@ Changing to the Classification problem
         print("y_pred is %s", y_pred)
         print(sess.run(tf.nn.softmax(y_pred)))
         print("y_ture is %s",self.dm.y_val)
+
+        plt.plot(step, accuracy_train,color='green')
+        plt.plot(step,accuracy_val,color='red')
+        plt.legend()
+        plt.show()
 
  
  
