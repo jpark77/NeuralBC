@@ -1,5 +1,3 @@
-
-
 import tensorflow as tf
 import json
 import pandas as pd
@@ -41,7 +39,7 @@ class RNN_Model_build(object):
         num_step = 30000
         # learning rate decay
         nbatch,_, _ = self.dm.x_train.shape
-        learning_rate = tf.train.exponential_decay(0.1, num_step, nbatch, 0.95, staircase=True)
+        learning_rate = tf.train.exponential_decay(0.13, num_step, nbatch, 0.8, staircase=True)
 
         X = tf.placeholder(tf.float32, [self.dm.batch_size, self.dm.window_length, self.dm.data_dim])
         Y = tf.placeholder(tf.float32, [self.dm.batch_size, self.dm.output_dim])
@@ -52,7 +50,6 @@ class RNN_Model_build(object):
         Y_pred = tf.contrib.layers.fully_connected(outputs[:,-1], self.dm.output_dim, activation_fn=None)  # We only interest the last output value
 
         loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=Y_pred,labels=Y))
-        # loss = tf.reduce_mean(tf.square(Y_pred - Y))
 
         # To fix the over fitting problem, introduce the L2 regularization to the loss functio
         #regularization_rate=0.1
@@ -60,9 +57,11 @@ class RNN_Model_build(object):
         #regulation=tf.contrib.layers.apply_regularization(regularizer,weight_list=None)
         #regularization=regularizer(weights1)+regularizer(weighits2)   ### How to find?
         #loss=loss+regularization
+
         reg_losses = tf.get_collection(tf.GraphKeys.REGULARIZATION_LOSSES)
         reg_constant = 0.6  # Choose an appropriate one.
         loss = loss + reg_constant * sum(reg_losses)
+
 
 
         # calculate accuracy
@@ -78,12 +77,14 @@ class RNN_Model_build(object):
 
         ### Session ###
         sess = tf.Session()
-         # tf.glorot_uniform_initializer()   tf.global_variables_initializer()   sess.run(tf.global_variables_initializer())
+         # tf.glorot_uniform_initializer()   tf.global_variables_initializer()
         tf.set_random_seed(2)
         sess.run(tf.global_variables_initializer())
+
         validate_feed={X: self.dm.x_val, Y: self.dm.y_val}
         accuracy_train=[]
         accuracy_val=[]
+        loss_shown=[]
         step=[]
         for i in range(num_step):
             _, l, accuracy_print = sess.run([train, loss,accuracy], feed_dict={X: self.dm.x_train, Y: self.dm.y_train})
@@ -92,6 +93,7 @@ class RNN_Model_build(object):
                 step.append(i)
                 accuracy_train.append(accuracy_print)
                 accuracy_val.append(validate_acc)
+                loss_shown.append(l)
                 print("Step %d  :  Loss %.9f, accuracy for recent batch % 9f" % (i, l,accuracy_print))
                 print("After %d training step(s), validation accuracy" "using average model is %g" %(i,validate_acc))
 
@@ -99,13 +101,14 @@ class RNN_Model_build(object):
         y_pred = sess.run(Y_pred, feed_dict={X: self.dm.x_val})
         y_pred = tf.nn.softmax(y_pred)
         plt.figure()
-        plot1 = plt.plot(step, accuracy_train, color='green')
-        plot2 = plt.plot(step, accuracy_val, color='red')
+        plot1 = plt.plot(step, accuracy_train, label='train data accuracy',color='green')
+        plot2 = plt.plot(step, accuracy_val, label='validation data accuracy',color='red')
+        plot3=plt.plot(step,loss_shown,label='loss',color='black')
         plt.title("Accuracy")
         plt.xlabel('epochs')
         plt.ylabel('accuracy')
         plt.ylim(0.0, 1.0)
-        plt.legend([plot1, plot2], ('train data accuracy', "validation data accuracy"))
+        plt.legend()
         plt.show()
 
 
@@ -465,11 +468,28 @@ def timer(start,end):
 start = monotonic()
 
 
+
 WLSTM = Wavelet_LSTM()
 WLSTM.Architecture("Wavelet Transform-LSTM", "Model_08")
-
+RNN = RNN_Model_build()
+RNN.Architecture("Simple RNN model",  "Model_01")
+LSTM = LSTM_Model_build()
+LSTM.Architecture("Simple LSTM model", "Model_02")
+GRU = GRU_Model_build()
+GRU.Architecture("Simple GRU model", "Model_03")
+TwoRNN = Two_Layer_RNN()
+TwoRNN.Architecture("2-layer-RNN", "Model_04")
 TwoLSTM = Two_Layer_LSTM()
 TwoLSTM.Architecture("2-layer-LSTM", "Model_05")
+TwoGRU = Two_Layer_GRU()
+TwoGRU.Architecture("2-layer-GRU", "Model_06")
+ThreeLSTM = Three_Layer_LSTM()
+ThreeLSTM.Architecture("3-layer-LSTM", "Model_07")
+
+
+end = monotonic()
+timer(start, end)
+print(start,end)
 
 
 end = monotonic()
