@@ -1,4 +1,4 @@
-# input data is high, low
+
 
 import tensorflow as tf
 import json
