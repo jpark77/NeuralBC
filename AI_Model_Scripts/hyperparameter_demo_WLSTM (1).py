@@ -38,7 +38,7 @@ class RNN_Model_build(object):
 
 
         ### Model ###
-        num_step = 20000
+        num_step = 30000
         # learning rate decay
         nbatch,_, _ = self.dm.x_train.shape
         learning_rate = tf.train.exponential_decay(0.1, num_step, nbatch, 0.95, staircase=True)
@@ -306,9 +306,9 @@ class Data_manager(object):
         self.data_dim = self.x.shape[-1]
         self.output_dim = 3
         self.batch_size = None
-        self.window_length = 11
+        self.window_length = 5
         self.percent_train = 0.6
-        self.hidden_dim = 11
+        self.hidden_dim = 5
         # extracting a series to test the accuracy (For the real time case, change this one to the latest time series. )
         self.latest_x = DF[-200:-self.window_length]
 
