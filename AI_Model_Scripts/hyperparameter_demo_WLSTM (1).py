@@ -41,7 +41,7 @@ class RNN_Model_build(object):
         num_step = 20000
         # learning rate decay
         nbatch,_, _ = self.dm.x_train.shape
-        learning_rate = tf.train.exponential_decay(0.1, num_step, nbatch, 0.9, staircase=True)
+        learning_rate = tf.train.exponential_decay(0.1, num_step, nbatch, 0.95, staircase=True)
 
         X = tf.placeholder(tf.float32, [self.dm.batch_size, self.dm.window_length, self.dm.data_dim])
         Y = tf.placeholder(tf.float32, [self.dm.batch_size, self.dm.output_dim])
