@@ -7,12 +7,12 @@
 
 | Title             | Authors     | Year  | Published in  |
 | ----------------- | ----------- | ----- | ------------- |
-| BitCoin meets Google Trends and Wikipedia: Quantifying the relationship between phenomena of the Internet era | Kristoufek, Ladislav | 2013 | Scientific Reports |
-| Statistical and Machine Learning forecasting methods : Concerns and ways forward |  Makridakis, Spyros; Spiliotis, Evangelos; Assimakopoulos, Vassilios | 2018 | PLos ONE |
-| Classification trees for time series | Douzal-Chouakria, Ahlame; Amblard, Cecile | 2011 | Pattern Recognition |
-| Exploiting Multi-Channels Deep Convolutional Neural Networks for Multivariate Time Series Classification | Zheng, Yi; Liu, Qi; Chen, Enhong; Ge, Yong; Zhao, J. Leon | 2014 | Front. Computational Science |
-| A deep learning framework for financial time series using stacked autoencoders and long- short term memory | Bao, Wei; Yue, Jun; Rao, Yulei | 2017 | PLos ONE |
 | Forecasting stock markets using wavelet transforms and recurrent neural networks: An integrated system based on artificial bee colony algorithm | Hsieh, Tsung-Jung; Hsiao, Hsiao-Fen; Yeh, Wei-Chang | 2010 | Applied Soft Computing |
+| Classification trees for time series | Douzal-Chouakria, Ahlame; Amblard, Cecile | 2011 | Pattern Recognition |
+| BitCoin meets Google Trends and Wikipedia: Quantifying the relationship between phenomena of the Internet era | Kristoufek, Ladislav | 2013 | Scientific Reports |
+| Exploiting Multi-Channels Deep Convolutional Neural Networks for Multivariate Time Series Classification | Zheng, Yi; Liu, Qi; Chen, Enhong; Ge, Yong; Zhao, J. Leon | 2014 | Frontiers of Computer Science |
 | Time Series Classification Using Multi-Channels Deep Convolutional Neural Networks | Zheng, Yi; Liu, Qi; Chen, Enhong; Ge, Yong; Zhao, J. Leon | 2014 | Springer LNCS |
-| Financial data science | Giudici, Paolo | 2018 | Statistics and Probability Letters |
 | The economics of BitCoin price formation | Ciaian, Pavel; Rajcaniova, Miroslava; Kancs, d’Artis| 2016 | Applied Economics |
+| A deep learning framework for financial time series using stacked autoencoders and long- short term memory | Bao, Wei; Yue, Jun; Rao, Yulei | 2017 | PLos ONE |
+| Financial data science | Giudici, Paolo | 2018 | Statistics and Probability Letters |
+| Statistical and Machine Learning forecasting methods : Concerns and ways forward |  Makridakis, Spyros; Spiliotis, Evangelos; Assimakopoulos, Vassilios | 2018 | PLos ONE |
