@@ -1,3 +1,13 @@
+# accuracy for different models:
+# WLSTM: 0.71(loss=0.4)
+# RNN: 0.66
+# LSTM: 0.66 (loss=0.6)
+# GRU: 0.6 (loss=0.57)
+# twoRNN: 0.63 (loss=0.55)
+# twoLSTM: 0.5 (loss=0.9, need more steps to train)
+# twoGRU: 0.63 (loss=0.5)
+# ThreeLSTM: 0.39 (loss=1.08)---This model exhibates the necessary to conduct optimization
+
 import tensorflow as tf
 import json
 import pandas as pd
