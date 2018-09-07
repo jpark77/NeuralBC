@@ -1,12 +1,13 @@
 # accuracy for different models:
 # WLSTM: 0.71(loss=0.4)
-# RNN: 0.66
+# RNN: 0.66        
 # LSTM: 0.66 (loss=0.6)
-# GRU: 0.6 (loss=0.57)
-# twoRNN: 0.63 (loss=0.55)
-# twoLSTM: 0.5 (loss=0.9, need more steps to train)
-# twoGRU: 0.63 (loss=0.5)
-# ThreeLSTM: 0.39 (loss=1.08)---This model exhibates the necessary to conduct optimization
+# GRU: 0.6 (loss=0.57)      w-GRU(Wavelet Transform with GRU): 0.735 
+# twoRNN: 0.63 (loss=0.55)      W-twoRNN: 0.73        
+# twoLSTM: 0.5 (loss=0.9, need more steps to train)    w-twoLSTM: 0.71
+# twoGRU: 0.63 (loss=0.5)   w-twoGRU: 0.74
+# ThreeLSTM: 0.39 (loss=1.08)  w-ThreeLSTM: 0.73
+# Conclusion: The model with data denoise-processed exhibit
 
 import tensorflow as tf
 import json
