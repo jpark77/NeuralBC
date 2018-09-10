@@ -16,3 +16,4 @@
 | A deep learning framework for financial time series using stacked autoencoders and long- short term memory | Bao, Wei; Yue, Jun; Rao, Yulei | 2017 | PLos ONE |
 | Financial data science | Giudici, Paolo | 2018 | Statistics and Probability Letters |
 | Statistical and Machine Learning forecasting methods : Concerns and ways forward |  Makridakis, Spyros; Spiliotis, Evangelos; Assimakopoulos, Vassilios | 2018 | PLos ONE |
+| Predicting direction of stock price index movement using artificial neurla networks and support vector machines: The sample of the Istanbul Stock Exchange | Yakup Kara; Melek Acar Boyacioglu; Omer Kaan Baykan | 2011 | Expert Systems with Applications |
