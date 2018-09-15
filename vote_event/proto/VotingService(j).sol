@@ -43,7 +43,7 @@ contract VotingService{
     
     bool answer_selected;
     
-    string coin;
+    string token_name;
     
     uint256 public shared_token;
     uint256 public token_amount;
@@ -83,7 +83,7 @@ contract VotingService{
         _;
     }
     
-    constructor(address _token,uint _choices,uint _amount_selected,string _coin) public{
+    constructor(address _token,uint _choices,uint _amount_selected,string _token_name) public{
         creator=msg.sender;
         token=_token;
         choices=_choices;
@@ -91,7 +91,7 @@ contract VotingService{
         require(amount_selected>0);
         start=false;
         end=false;
-        coin=_coin;
+        token_name=_token_name;
     }
     
     function Vote_Start() onlyCreator{
@@ -126,13 +126,13 @@ contract VotingService{
         selectanswer(_answer,answer_selected);
     }
     
-    event givereward(address _reward_voter,uint256 _reward_time,uint256 _point,string _coin,uint256 _shared_token,string _gate);
+    event givereward(address _reward_voter,uint256 _reward_time,uint256 _point,string _token_name,uint256 _shared_token,string _gate);
     
     function GiveReward(address _reward_voter,uint256 _reward_time) onlyCreator afterFinish{
         rewarded[_reward_voter]=true;
         require(Token(token).transfer(_reward_voter,shared_token));
         voter_point[_reward_voter]=voter_point[_reward_voter].add(5);
-        givereward(_reward_voter,_reward_time,5,coin,shared_token,"Answer");
+        givereward(_reward_voter,_reward_time,5,token_name,shared_token,"Answer");
     }
     
     
